@@ -36,6 +36,7 @@ public:
 	void print();
 
 	std::tuple <Matriz*, Matriz*> factorizacionHouseHolder();
+	std::tuple <Matriz*, Matriz*> diagonalizacionQR(double cota);
 	double normaCuadradoVectorial();
 	void cambiarSubmatriz(Matriz& submatriz, const int desdeFil, const int hastaFil, const int desdeCol, const int hastaCol);
 
@@ -43,6 +44,7 @@ private:
 	void intercambiarFilas(const int i, const int j);
 	void intercambiarFilas(const int i, const int j, const int hasta);
 	int filaConMayorAbsEnCol(const int col, const int desde);
+	double sumBajoDiagonal();
 	std::tuple <Matriz*, Matriz*, Matriz*> factorizacionPLU();
 	Matriz* backwardSubstitution(Matriz &b);
 	Matriz* forwardSubstitution(Matriz &b);
