@@ -15,4 +15,4 @@ endfor
 
 mu = mean(X);
 n = size(X)(1);
-X = (X - mu) / sqrt(n - 1); 
+X = (X - mu) / sqrt(n - 1);
