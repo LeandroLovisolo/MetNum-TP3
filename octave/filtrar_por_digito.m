@@ -14,5 +14,9 @@ for i = 1:size(images)(3)
 endfor
 
 mu = mean(X);
+for i = 1:rows(X)
+	X(i,:) = X(i,:) - mu;
+end
+
 n = size(X)(1);
-X = (X - mu) / sqrt(n - 1);
+X = X / sqrt(n - 1);
