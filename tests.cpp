@@ -1,6 +1,7 @@
 #include "Matriz.h"
 #include <iostream>
 #include <tuple>
+#include "misc.h"
 using namespace std;
 
 void houseHolderTest() {
