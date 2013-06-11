@@ -1,6 +1,6 @@
 #include <cmath>
 #include <iostream>
-
+#include <fstream>
 #include "Matriz.h"
 
 using namespace std;
@@ -20,6 +20,31 @@ Matriz::Matriz(Matriz& otra) {
 
 Matriz::~Matriz() {
 	delete vectorMatriz;
+}
+
+void Matriz::save(char *fileName) {
+	ofstream file(fileName, ios::binary);
+	if(file.is_open()) {
+		file.write((char*)&_columnas, 4);
+		file.write((char*)&_filas, 4);
+		file.write((char*)vectorMatriz, _columnas*_filas*sizeof(double));
+	}
+	else {
+		cout << "Error grabando la matriz!" << endl;
+	}
+}
+
+Matriz::Matriz(char *fileName) {
+	ifstream file(fileName, ios::binary);
+	if(file.is_open()) {
+		file.read((char *)&_columnas, 4);
+		file.read((char *)&_filas, 4);
+		vectorMatriz = new double[_filas * _columnas];
+		file.read((char*)vectorMatriz,_columnas*_filas*sizeof(double));
+	}
+	else {
+		cout << "Error cargando matriz!" << endl;
+	}
 }
 
 Matriz* Matriz::identidad(int n) {
@@ -195,7 +220,7 @@ tuple <Matriz*, Matriz*, Matriz*> Matriz::factorizacionPLU() {
 }
 
 double Matriz::normaCuadradoVectorial() {
-	double acum;
+	double acum = 0;
 	for(int i=0; i<_filas; i++) {
 		acum += pow(elem(i,0), 2);
 	}
@@ -207,11 +232,15 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolder() {
 	Matriz *q = identidad(_filas);
 	for(int i=0; i<_columnas-1; i++) {
 		//Vector x
+		//cout << "Matriz R" << i << endl;
+		//r->print();
 		Matriz *x = r->submatriz(i,_filas-1, i, i);
-		//cout << "Submatriz X" << endl;
+		//cout << "Vector X" << endl;
 		//x->print();
 		//Vector x-y = u
 		x->elem(0,0) -= x->normaCuadradoVectorial();
+		//cout << "Vector U" << endl;
+		// x->print();
 		// 2/ (||u||_2)^2
 		double cte = 2 / pow(x->normaCuadradoVectorial(),2);
 		Matriz *uT = new Matriz(*x);
@@ -224,10 +253,17 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolder() {
 		//Hago I - 2*u*uT/(||u||_2)^2
 		Matriz *I = identidad(cteuxuT->_filas);
 		Matriz *Hk = (*I)-(*cteuxuT);
+		//cout << "Matriz Hk " << endl;
+		//Hk->print();
 		delete cteuxuT;
 		//Para hacer la multiplicación entre Q y R relleno una identidad
 		Matriz *QTk = identidad(q->_filas);
+		//cout << "Cómo es QTk " << endl;
+		// QTk->print();
 		QTk->cambiarSubmatriz(*Hk, i, _filas-1, i, _columnas -1);
+		// cout << "Cómo es QTk despues de cambiar sumatriz" << endl;
+		// QTk->print();
+
 		Matriz *newR = (*QTk)*(*r);
 		delete r;
 		r = newR;
@@ -250,28 +286,63 @@ double Matriz::sumBajoDiagonal() {
 	return acum;
 }
 
+Matriz* Matriz::ceros(int n, int m) {
+	Matriz* ret = new Matriz(n,m);
+	for(int i=0;i<n;i++) {
+		for(int j=0;j<m;j++) {
+			ret->elem(i,j) = 0;
+		}
+	}
+	return ret;
+}
+
+Matriz* Matriz::transformarAMediaCero() {
+	Matriz *mu = ceros(1, _columnas);
+	Matriz *original = new Matriz(*this);
+	//Consigo vector^t de medias
+	for(int i=0;i<_filas;i++) {
+		for(int j=0;j<_columnas;j++) {
+			mu->elem(0,j) += original->elem(i,j);
+		}
+	}
+	for(int j=0;j<_columnas;j++) {
+		mu->elem(0,j) /= _filas;
+	}
+	//Resto las medias
+	for(int i=0;i<_filas;i++) {
+		for(int j=0;j<_columnas;j++) {
+			original->elem(i,j) -= mu->elem(0,j);
+		}
+	}
+	return original;
+}
+
 tuple <Matriz*, Matriz*> Matriz::diagonalizacionQR(double cota) {
 	Matriz *Q = identidad(_filas);
 	Matriz *Ak = new Matriz(*this);
 	int i = 0;
-	while(Ak->sumBajoDiagonal() > cota) {
+	while(Ak->sumBajoDiagonal() > cota/*i != 5*/) {
 		tuple <Matriz*, Matriz*> res = Ak->factorizacionHouseHolder();
-		cout << "Matriz Q" << i << endl;
-		get<0>(res)->print();
-		cout << "Matriz R" << i << endl;
-		get<1>(res)->print();
-		cout << "Nuevo A" << i+1 << endl;
+		//cout << "Matriz Q" << i << endl;
+		//get<0>(res)->print();
+		//cout << "Matriz R" << i << endl;
+		//get<1>(res)->print();
 		delete Ak;
 		//Qk = Q(k-2) * Q(k-1)
 		Matriz *newQ = (*Q)*(*get<0>(res));
+		//cout << "New Q" << i+1 << endl;
+		//newQ->print();
 		delete Q;
-		delete get<0>(res);
 		Q = newQ;
 		//Ak = Rk*Qk
 		Ak = (*get<1>(res))*(*get<0>(res));
-		Ak->print();
+		//cout << "Nuevo A" << i+1 << endl;
+		//Ak->print();
+		delete get<0>(res);
 		delete get<1>(res);
+		i++;
 	}
+	//cout << "Iteraciones" << i << endl;
 	return make_tuple(Q, Ak);
 }
 

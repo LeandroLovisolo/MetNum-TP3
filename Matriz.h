@@ -12,9 +12,11 @@ private:
 public:
 	Matriz(const int filas, const int columnas);
 	Matriz(Matriz& otra);
+	Matriz(char* fileName);
 	~Matriz();
 
 	static Matriz* identidad(int n);
+	Matriz* ceros(int n, int m);
 
 	int filas() const;
 	int columnas() const;
@@ -34,9 +36,11 @@ public:
 	Matriz* submatriz(const int desdeFil, const int hastaFil, const int desdeCol, const int hastaCol);
 	Matriz* multiplicarPorInversa(Matriz &M);
 	void print();
+	void save(char* fileName);
 
 	std::tuple <Matriz*, Matriz*> factorizacionHouseHolder();
 	std::tuple <Matriz*, Matriz*> diagonalizacionQR(double cota);
+	Matriz* transformarAMediaCero();
 	double normaCuadradoVectorial();
 	void cambiarSubmatriz(Matriz& submatriz, const int desdeFil, const int hastaFil, const int desdeCol, const int hastaCol);
 
