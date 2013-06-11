@@ -15,6 +15,7 @@ public:
 	~Matriz();
 
 	static Matriz* identidad(int n);
+	Matriz* ceros(int n, int m);
 
 	int filas() const;
 	int columnas() const;
@@ -37,6 +38,7 @@ public:
 
 	std::tuple <Matriz*, Matriz*> factorizacionHouseHolder();
 	std::tuple <Matriz*, Matriz*> diagonalizacionQR(double cota);
+	Matriz* transformarAMediaCero();
 	double normaCuadradoVectorial();
 	void cambiarSubmatriz(Matriz& submatriz, const int desdeFil, const int hastaFil, const int desdeCol, const int hastaCol);
 
