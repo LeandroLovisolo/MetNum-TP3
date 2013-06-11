@@ -1,6 +1,6 @@
 #include <cmath>
 #include <iostream>
-
+#include <fstream>
 #include "Matriz.h"
 
 using namespace std;
@@ -20,6 +20,31 @@ Matriz::Matriz(Matriz& otra) {
 
 Matriz::~Matriz() {
 	delete vectorMatriz;
+}
+
+void Matriz::save(char *fileName) {
+	ofstream file(fileName, ios::binary);
+	if(file.is_open()) {
+		file.write((char*)&_columnas, 4);
+		file.write((char*)&_filas, 4);
+		file.write((char*)vectorMatriz, _columnas*_filas*sizeof(double));
+	}
+	else {
+		cout << "Error grabando la matriz!" << endl;
+	}
+}
+
+Matriz::Matriz(char *fileName) {
+	ifstream file(fileName, ios::binary);
+	if(file.is_open()) {
+		file.read((char *)&_columnas, 4);
+		file.read((char *)&_filas, 4);
+		vectorMatriz = new double[_filas * _columnas];
+		file.read((char*)vectorMatriz,_columnas*_filas*sizeof(double));
+	}
+	else {
+		cout << "Error cargando matriz!" << endl;
+	}
 }
 
 Matriz* Matriz::identidad(int n) {
