@@ -263,11 +263,12 @@ double Matriz::sumBajoDiagonal() {
 
 Matriz* Matriz::ceros(int n, int m) {
 	Matriz* ret = new Matriz(n,m);
-	for(int i=0;i<_filas;i++) {
-		for(int j=0;j<_columnas;j++) {
+	for(int i=0;i<n;i++) {
+		for(int j=0;j<m;j++) {
 			ret->elem(i,j) = 0;
 		}
 	}
+	return ret;
 }
 
 Matriz* Matriz::transformarAMediaCero() {
@@ -276,16 +277,16 @@ Matriz* Matriz::transformarAMediaCero() {
 	//Consigo vector^t de medias
 	for(int i=0;i<_filas;i++) {
 		for(int j=0;j<_columnas;j++) {
-			mu->elem(1,j) += original->elem(i,j);
+			mu->elem(0,j) += original->elem(i,j);
 		}
 	}
 	for(int j=0;j<_columnas;j++) {
-		mu->elem(1,j) /= _filas;
+		mu->elem(0,j) /= _filas;
 	}
 	//Resto las medias
 	for(int i=0;i<_filas;i++) {
 		for(int j=0;j<_columnas;j++) {
-			original->elem(i,j) -= mu->elem(1,j);
+			original->elem(i,j) -= mu->elem(0,j);
 		}
 	}
 	return original;
