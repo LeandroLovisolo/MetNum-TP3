@@ -83,3 +83,24 @@ void leerImagenTest() {
 	}
 	delete imagenes;
 }
+
+void grabarYCargarMatriz() {
+	cout << "Matriz A" << endl;
+	Matriz A(3,3);
+	A.elem(0,0) = 1;
+	A.elem(0,1) = 2;
+	A.elem(0,2) = 3;
+
+	A.elem(1,0) = 2;
+	A.elem(1,1) = 5;
+	A.elem(1,2) = 7;
+
+	A.elem(2,0) = 3;
+	A.elem(2,1) = 7;
+	A.elem(2,2) = 8;
+	A.print();
+	A.save((char*)"podonga.mat");
+	Matriz N((char*)"podonga.mat");
+	cout << "Matriz N" << endl;
+	N.print();
+}

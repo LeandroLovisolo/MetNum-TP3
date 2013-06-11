@@ -3,5 +3,7 @@
 
 void houseHolderTest();
 void diagonalizacionQRTest();
+void leerImagenTest();
+void grabarYCargarMatriz();
 
 #endif
