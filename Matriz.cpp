@@ -301,18 +301,18 @@ tuple <Matriz*, Matriz*> Matriz::diagonalizacionQR(double cota) {
 		//get<0>(res)->print();
 		//cout << "Matriz R" << i << endl;
 		//get<1>(res)->print();
-		//cout << "Nuevo A" << i+1 << endl;
 		delete Ak;
 		//Qk = Q(k-2) * Q(k-1)
 		Matriz *newQ = (*Q)*(*get<0>(res));
-		//cout << "New Q" << endl;
+		//cout << "New Q" << i+1 << endl;
 		//newQ->print();
 		delete Q;
-		delete get<0>(res);
 		Q = newQ;
 		//Ak = Rk*Qk
 		Ak = (*get<1>(res))*(*get<0>(res));
+		//cout << "Nuevo A" << i+1 << endl;
 		//Ak->print();
+		delete get<0>(res);
 		delete get<1>(res);
 		i++;
 	}
