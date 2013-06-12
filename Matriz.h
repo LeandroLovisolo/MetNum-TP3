@@ -8,6 +8,7 @@ private:
 	double *vectorMatriz;
 	int _filas;
 	int _columnas;
+	char _transpuesta;
 
 public:
 	Matriz(const int filas, const int columnas);
@@ -40,6 +41,7 @@ public:
 
 	std::tuple <Matriz*, Matriz*> factorizacionHouseHolder();
 	std::tuple <Matriz*, Matriz*> diagonalizacionQR(double cota);
+	Matriz* media();
 	Matriz* transformarAMediaCero();
 	double normaCuadradoVectorial();
 	void cambiarSubmatriz(Matriz& submatriz, const int desdeFil, const int hastaFil, const int desdeCol, const int hastaCol);

@@ -8,12 +8,14 @@ using namespace std;
 Matriz::Matriz(const int filas, const int columnas) {
 	_filas = filas;
 	_columnas = columnas;
+	_transpuesta = false;
 	vectorMatriz = new double[filas * columnas];
 }
 
 Matriz::Matriz(Matriz& otra) {
 	_filas = otra._filas;
 	_columnas = otra._columnas;
+	_transpuesta = otra._transpuesta;
 	vectorMatriz = new double[_filas * _columnas];
 	for(int i = 0; i < _filas * _columnas; i++) vectorMatriz[i] = otra.vectorMatriz[i];
 }
@@ -27,6 +29,7 @@ void Matriz::save(char *fileName) {
 	if(file.is_open()) {
 		file.write((char*)&_columnas, 4);
 		file.write((char*)&_filas, 4);
+		file.write((char*)&_transpuesta, 1);
 		file.write((char*)vectorMatriz, _columnas*_filas*sizeof(double));
 	}
 	else {
@@ -39,6 +42,7 @@ Matriz::Matriz(char *fileName) {
 	if(file.is_open()) {
 		file.read((char *)&_columnas, 4);
 		file.read((char *)&_filas, 4);
+		file.read((char *)&_transpuesta, 1);
 		vectorMatriz = new double[_filas * _columnas];
 		file.read((char*)vectorMatriz,_columnas*_filas*sizeof(double));
 	}
@@ -90,21 +94,19 @@ int Matriz::columnas() const {
 }
 
 void Matriz::transponer(){
-	double *tempMat = new double[_filas * _columnas];
-	for(int i = 0; i < _filas ; i++) {
-		for(int j = 0; j < _columnas; j++) {
-			tempMat[j * _columnas + i] = elem(i,j);
-		}
-	}
-	delete vectorMatriz;
-	vectorMatriz = tempMat;
+	_transpuesta = true;
 	int temp = _filas;
 	_filas = _columnas;
 	_columnas = temp;
 }
 
 double &Matriz::elem(const int fila, const int columna) {
-	return vectorMatriz[fila * _columnas + columna];
+	if(!_transpuesta) {
+		return vectorMatriz[fila * _columnas + columna];
+	}
+	else {
+		return vectorMatriz[columna * _filas + fila];
+	}
 }
 
 double Matriz::max() {
@@ -156,6 +158,10 @@ Matriz* Matriz::operator-(Matriz &m) {
 }
 
 Matriz* Matriz::operator*(Matriz &m) {
+	if(_columnas != m.filas()) {
+		cout << "Producto de matrices invalido" << endl;
+		exit(1);
+	}
 	Matriz* producto = new Matriz(_filas, m._columnas);
 	for(int i = 0; i < _filas; i++) {
 		for(int j = 0; j < m._columnas; j++) {
@@ -231,6 +237,7 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolder() {
 	Matriz *r = new Matriz(*this);
 	Matriz *q = identidad(_filas);
 	for(int i=0; i<_columnas-1; i++) {
+		cout << "Columna " << i << endl;
 		//Vector x
 		//cout << "Matriz R" << i << endl;
 		//r->print();
@@ -296,32 +303,40 @@ Matriz* Matriz::ceros(int n, int m) {
 	return ret;
 }
 
-Matriz* Matriz::transformarAMediaCero() {
+Matriz* Matriz::media() {
 	Matriz *mu = ceros(1, _columnas);
-	Matriz *original = new Matriz(*this);
 	//Consigo vector^t de medias
 	for(int i=0;i<_filas;i++) {
 		for(int j=0;j<_columnas;j++) {
-			mu->elem(0,j) += original->elem(i,j);
+			mu->elem(0,j) += elem(i,j);
 		}
 	}
 	for(int j=0;j<_columnas;j++) {
 		mu->elem(0,j) /= _filas;
 	}
+	return mu;
+}
+
+Matriz* Matriz::transformarAMediaCero() {
+	Matriz* mu = media();
+	Matriz *original = new Matriz(*this);
 	//Resto las medias
 	for(int i=0;i<_filas;i++) {
 		for(int j=0;j<_columnas;j++) {
 			original->elem(i,j) -= mu->elem(0,j);
 		}
 	}
+	delete mu;
 	return original;
 }
 
 tuple <Matriz*, Matriz*> Matriz::diagonalizacionQR(double cota) {
 	Matriz *Q = identidad(_filas);
+	cout << "Checkpoint 1" << endl;
 	Matriz *Ak = new Matriz(*this);
 	int i = 0;
 	while(Ak->sumBajoDiagonal() > cota/*i != 5*/) {
+		cout << "Suma bajo la diagonal " << Ak->sumBajoDiagonal() << endl;
 		tuple <Matriz*, Matriz*> res = Ak->factorizacionHouseHolder();
 		//cout << "Matriz Q" << i << endl;
 		//get<0>(res)->print();
