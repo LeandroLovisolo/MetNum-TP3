@@ -104,3 +104,23 @@ void grabarYCargarMatriz() {
 	cout << "Matriz N" << endl;
 	N.print();
 }
+
+void mediaMatricialTest() {
+	cout << "Matriz A" << endl;
+	Matriz A(3,3);
+	A.elem(0,0) = 1;
+	A.elem(0,1) = 2;
+	A.elem(0,2) = 3;
+
+	A.elem(1,0) = 2;
+	A.elem(1,1) = 5;
+	A.elem(1,2) = 7;
+
+	A.elem(2,0) = 3;
+	A.elem(2,1) = 7;
+	A.elem(2,2) = 8;
+	A.print();
+	Matriz *media = A.media();
+	cout << "Matriz media" << endl;
+	media->print();
+}

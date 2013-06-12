@@ -5,5 +5,6 @@ void houseHolderTest();
 void diagonalizacionQRTest();
 void leerImagenTest();
 void grabarYCargarMatriz();
+void mediaMatricialTest();
 
 #endif
