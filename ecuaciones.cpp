@@ -1,6 +1,7 @@
 #include "Matriz.h"
 #include <iostream>
 #include "misc.h"
+#include <tuple>
 #include <cmath>
 using namespace std;
 
@@ -19,7 +20,7 @@ Matriz* TC(Matriz& x, Matriz&Vt) {
 }
 
 Matriz* generarVt(Matriz& A, char* fileName=NULL) {
-	if(fileName != NULL) {
+	if(fileName == NULL) {
 		Matriz* imagenes = leerMNISTimages((char*) "train-images.idx3-ubyte");
 		cout << "Leyo las imagenes" << endl;
 		Matriz* X = matrizDeCovarianza(*imagenes);
@@ -34,19 +35,30 @@ Matriz* generarVt(Matriz& A, char* fileName=NULL) {
 		delete imagenes;
 		delete X;
 		delete Xt;
-		tuple <Matriz*, Matriz*> res = A.diagonalizacionQR(0.01);
+		tuple <Matriz*, Matriz*> res = XtX->diagonalizacionQR(0.1);
 		delete get<1>(res);
 		delete XtX;
+		get<0>(res)->transponer();
 		return get<0>(res);
 	}
 	else {
+		cout << "Cargando Xtx" << endl;
 		Matriz XtX(fileName);
-		tuple <Matriz*, Matriz*> res = A.diagonalizacionQR(0.01);
+		cout << "Matriz XtX cargada" << endl;
+		cout << "Columnas XtX " << XtX.columnas() << endl;
+		int count = 0;
+		for(int i=0;i<XtX.filas();i++) {
+			for(int j=0;j<XtX.columnas();j++) {
+				if(XtX.elem(i,j) == 0) {
+					count++;
+				}
+			}
+		}
+		cout << "Ceros encontrados " << count << endl;
+		tuple <Matriz*, Matriz*> res = XtX.diagonalizacionQR(0.1);
+		cout << "Matriz diagonalizada" << endl;
 		delete get<1>(res);
+		get<0>(res)->transponer();
 		return get<0>(res);
 	}
-	//cout << "Matriz V" << endl;
-	//get<0>(res)->print();
-	//cout << "Matriz de autovalores" << endl;
-	//get<1>(res)->print();
 }
