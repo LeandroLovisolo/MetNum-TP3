@@ -12,5 +12,21 @@ void Ayuda(string ejecutable) {
 }
 
 int main(int argc, char *argv[]) {
-
+	Matriz* trainImages = leerMNISTimages((char*) "train-images.idx3-ubyte");
+	Matriz* trainLabels = leerMNISTlabels((char*) "train-labels.idx1-ubyte");
+	cout << "Leyo las imagenes de entrenamiento" << endl;
+	Matriz* Xtrain = matrizDeCovarianza(*trainImages);
+	cout << "Matriz X de entrenamiento" << endl;
+	Matriz* testImages = leerMNISTimages((char*)"t10k-images.idx3-ubyte");
+	Matriz* testLabels = leerMNISTlabels((char*)"t10k-labels.idx1-ubyte");
+	
+	cout << "Leyo las imagenes de test" << endl;
+	Matriz* Xtest = matrizDeCovarianza(*testImages);
+	cout << "Matriz X de test" << endl;
+	Matriz* Vt = generarVt(*Xtrain, (char*) "XtX.mat");
+	cout << "Cargado Vt" << endl;
+	Matriz* medias = matrizDeMedias(*trainImages,*trainLabels,*Vt);
+	cout << "Matriz de medias" << endl;
+	double aciertos = adivinarDigitoMasivamente(*Xtest,*testLabels,*medias,*Vt);
+	cout << "Porcentaje de aciertos = " << aciertos << endl;
 }
