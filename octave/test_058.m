@@ -105,28 +105,46 @@ aciertos0 = 0;
 aciertos5 = 0;
 aciertos8 = 0;
 
+msg('\nImágenes de prueba dígito 0\n\n');
+
 for i=1:rows(test0)
     D0(:,i) = [norm(T_test0(i,:) - mu_img0);
                norm(T_test0(i,:) - mu_img5);
                norm(T_test0(i,:) - mu_img8)];
     [x, idx] = min(D0(:,i));
-    if(idx == 1); aciertos0++; endif
+    msg(cstrcat('Dígito reconocido: ', idx2dig(idx), '\n'));
+    if(idx == 1);
+        msg('Acierto!\n')
+        aciertos0++;
+    endif
 end
+
+msg('\nImágenes de prueba dígito 5\n\n');
 
 for i=1:rows(test5)
     D5(:,i) = [norm(T_test5(i,:) - mu_img0);
                norm(T_test5(i,:) - mu_img5);
                norm(T_test5(i,:) - mu_img8)];
     [x, idx] = min(D5(:,i));
-    if(idx == 2); aciertos5++; endif
+    msg(cstrcat('Dígito reconocido: ', idx2dig(idx), '\n'));
+    if(idx == 2);
+        msg('Acierto!\n')
+        aciertos5++;
+    endif
 end
+
+msg('\nImágenes de prueba dígito 8\n\n');
 
 for i=1:rows(test8)
     D8(:,i) = [norm(T_test8(i,:) - mu_img0);
                norm(T_test8(i,:) - mu_img5);
                norm(T_test8(i,:) - mu_img8)];
     [x, idx] = min(D8(:,i));
-    if(idx == 3); aciertos8++; endif
+    msg(cstrcat('Dígito reconocido: ', idx2dig(idx), '\n'));
+    if(idx == 3);
+        msg('Acierto!\n')
+        aciertos8++;
+    endif
 end
 
 msg('Dígito 0:\n');
@@ -163,3 +181,16 @@ function msg(m)
 
 printf(m);
 fflush(stdout);
+
+
+function d = idx2dig(idx)
+
+if(idx == 1)
+  d = '0';
+endif
+if(idx == 2)
+  d = '5';
+endif
+if(idx == 3)
+  d = '9';
+endif
