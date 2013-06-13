@@ -6,5 +6,5 @@ void diagonalizacionQRTest();
 void leerImagenTest();
 void grabarYCargarMatriz();
 void mediaMatricialTest();
-
+void nuevasOperacionseMatriz();
 #endif

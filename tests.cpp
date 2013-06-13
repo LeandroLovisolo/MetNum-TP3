@@ -124,3 +124,27 @@ void mediaMatricialTest() {
 	cout << "Matriz media" << endl;
 	media->print();
 }
+
+void nuevasOperacionseMatriz() {
+	cout << "Matriz A" << endl;
+	Matriz A(1,3);
+	A.elem(0,0) = 1;
+	A.elem(0,1) = 2;
+	A.elem(0,2) = 3;
+	A.print();
+	cout << "Matriz A transpuesta" << endl;
+	Matriz At(A);
+	At.transponer();
+	At.print();
+	Matriz* res = At*A;
+	res->print();
+	cout << "Matriz res por cte" << endl;
+	Matriz* cteRes = (*res)*2;
+	cteRes->print();
+	Matriz* restaCteRes = (*cteRes) - (*cteRes);
+	cout << "Matriz restaCteRes" << endl;
+	restaCteRes->print();
+	delete res;
+	delete cteRes;
+	delete restaCteRes;
+}
