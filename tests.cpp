@@ -67,6 +67,13 @@ void diagonalizacionQRTest() {
 	get<0>(res)->transponer();
 	Matriz *QAQt = (*QA)*(*get<0>(res));
 	QAQt->print();
+	cout << "Matriz Q*Qt" << endl;
+	Matriz* Q = new Matriz(*get<0>(res));
+	get<0>(res)->transponer();
+	Matriz* QQt = (*Q)*(*get<0>(res));
+	QQt->print();
+	delete Q;
+	delete QQt;
 	delete QAQt;
 	delete QA;
 	delete get<0>(res);
