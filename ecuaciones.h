@@ -4,6 +4,6 @@
 
 Matriz* matrizDeCovarianza(Matriz& A);
 Matriz* TC(Matriz& x, Matriz&Vt);
-Matriz* generarVt(Matriz& A, char* fileName=NULL);
+Matriz* generarVt(Matriz& A);
 
 #endif

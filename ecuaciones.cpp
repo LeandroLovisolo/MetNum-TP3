@@ -10,6 +10,7 @@ Matriz* matrizDeCovarianza(Matriz& A) {
 	Matriz *Xret = (*X)*(1/sqrt(X->filas()-1));
 	delete X;
 	return Xret;
+	return 0;
 }
 
 Matriz* TC(Matriz& x, Matriz&Vt) {
@@ -19,8 +20,9 @@ Matriz* TC(Matriz& x, Matriz&Vt) {
 	return Vt*x;
 }
 
-Matriz* generarVt(Matriz& A, char* fileName=NULL) {
-	if(fileName == NULL) {
+Matriz* generarVt(Matriz& A) {
+	Matriz* XtX = NULL;
+	if(!fileExists((char*)"XtX.mat")) {
 		Matriz* imagenes = leerMNISTimages((char*) "train-images.idx3-ubyte");
 		cout << "Leyo las imagenes" << endl;
 		Matriz* X = matrizDeCovarianza(*imagenes);
@@ -28,13 +30,23 @@ Matriz* generarVt(Matriz& A, char* fileName=NULL) {
 		Matriz* Xt = new Matriz(*X);
 		Xt->transponer();
 		cout << "Matrix Xt" << endl;
-		Matriz* XtX = (*Xt)*(*X);
+		XtX = (*Xt)*(*X);
 		cout << "Matriz XtX columnas = " << XtX->columnas() << endl;
 		cout << "Matriz XtX filas = " << XtX->filas() << endl;
 		XtX->save((char*)"XtX.mat");
 		delete imagenes;
 		delete X;
 		delete Xt;
+	}
+	else {
+		cout << "Cargando XtX" << endl;
+		XtX = new Matriz((char*)"XtX.mat");
+		cout << "Matriz XtX cargada" << endl;
+		cout << "Columnas XtX " << XtX->columnas() << endl;
+	}
+
+	if(!fileExists((char*)"Vt.mat")) {
+		cout << "Generando matriz Vt" << endl;
 		tuple <Matriz*, Matriz*> res = XtX->diagonalizacionQR(0.1);
 		delete get<1>(res);
 		delete XtX;
@@ -43,15 +55,9 @@ Matriz* generarVt(Matriz& A, char* fileName=NULL) {
 		return get<0>(res);
 	}
 	else {
-		cout << "Cargando Xtx" << endl;
-		Matriz XtX(fileName);
-		cout << "Matriz XtX cargada" << endl;
-		cout << "Columnas XtX " << XtX.columnas() << endl;
-		tuple <Matriz*, Matriz*> res = XtX.diagonalizacionQR(0.1);
-		cout << "Matriz diagonalizada" << endl;
-		delete get<1>(res);
-		get<0>(res)->transponer();
-		get<0>(res)->save((char*)"Vt.mat");
-		return get<0>(res);
+		cout << "Cargada matriz Vt" << endl;
+		Matriz* Vt = new Matriz((char*)"Vt.mat");
+		return Vt;
 	}
+
 }
