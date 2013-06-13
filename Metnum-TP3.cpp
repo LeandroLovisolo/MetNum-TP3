@@ -4,6 +4,7 @@
 #include "ecuaciones.h"
 #include "Matriz.h"
 #include "misc.h"
+#include "tests.h"
 
 using namespace std;
 
@@ -23,7 +24,7 @@ int main(int argc, char *argv[]) {
 	cout << "Leyo las imagenes de test" << endl;
 	Matriz* Xtest = matrizDeCovarianza(*testImages);
 	cout << "Matriz X de test" << endl;
-	Matriz* Vt = generarVt(*Xtrain, (char*) "XtX.mat");
+	Matriz* Vt = generarVt(*Xtrain);
 	cout << "Cargado Vt" << endl;
 	Matriz* medias = matrizDeMedias(*trainImages,*trainLabels,*Vt);
 	cout << "Matriz de medias" << endl;
