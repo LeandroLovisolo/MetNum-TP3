@@ -39,6 +39,7 @@ Matriz* generarVt(Matriz& A, char* fileName=NULL) {
 		delete get<1>(res);
 		delete XtX;
 		get<0>(res)->transponer();
+		get<0>(res)->save((char*)"Vt.mat");
 		return get<0>(res);
 	}
 	else {
@@ -46,19 +47,11 @@ Matriz* generarVt(Matriz& A, char* fileName=NULL) {
 		Matriz XtX(fileName);
 		cout << "Matriz XtX cargada" << endl;
 		cout << "Columnas XtX " << XtX.columnas() << endl;
-		int count = 0;
-		for(int i=0;i<XtX.filas();i++) {
-			for(int j=0;j<XtX.columnas();j++) {
-				if(XtX.elem(i,j) == 0) {
-					count++;
-				}
-			}
-		}
-		cout << "Ceros encontrados " << count << endl;
 		tuple <Matriz*, Matriz*> res = XtX.diagonalizacionQR(0.1);
 		cout << "Matriz diagonalizada" << endl;
 		delete get<1>(res);
 		get<0>(res)->transponer();
+		get<0>(res)->save((char*)"Vt.mat");
 		return get<0>(res);
 	}
 }
