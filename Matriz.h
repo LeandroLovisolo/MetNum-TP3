@@ -47,6 +47,7 @@ public:
 	void cambiarSubmatriz(Matriz& submatriz, const int desdeFil, const int hastaFil, const int desdeCol, const int hastaCol);
 
 private:
+	double* transponerCabeza();
 	void intercambiarFilas(const int i, const int j);
 	void intercambiarFilas(const int i, const int j, const int hasta);
 	int filaConMayorAbsEnCol(const int col, const int desde);
