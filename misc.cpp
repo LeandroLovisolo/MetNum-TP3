@@ -134,6 +134,9 @@ Matriz* matrizDeMedias(Matriz& trainImages, Matriz& trainLabels, Matriz& Vt) {
 	for(int i=0;i<10;i++) {
 		cout << "Fila de medias " << i << endl;
 		Matriz* media = trainImgTrans[i]->media();
+		media->transponer();
+		cout << "Norma cuadrado " << media->normaCuadradoVectorial() << endl;;
+		exit(1);
 		for(int j=0;j<media->columnas();j++) {
 			ret->elem(i,j) = media->elem(0,j);
 		}
@@ -190,11 +193,13 @@ double adivinarDigitoMasivamente(Matriz &x, Matriz &testLabels, Matriz &medias, 
 				normBuf += pow(transformada->elem(j,h) - medias.elem(i,j),2);
 			}
 			normBuf = sqrt(normBuf);
+			//cout << "Norma actual = " << normBuf << " Norma minima = " << minNorm << endl;
 			if(minNorm > normBuf) {
 				minNorm = normBuf;
 				minNormIndex = i;
 			}
 		}
+		cout << "Digito de la imagen " << testLabels.elem(h,0) << " digito adivinado = " << minNormIndex << endl;
 		if(testLabels.elem(h,0) == minNormIndex) {
 			aciertos++;
 		}
