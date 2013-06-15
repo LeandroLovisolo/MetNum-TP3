@@ -13,11 +13,11 @@ void houseHolderTest() {
 	A.elem(0,1) = -3;
 	A.elem(0,2) = 4;
 
-	A.elem(1,0) = 4;
+	A.elem(1,0) = 0;
 	A.elem(1,1) = 0;
 	A.elem(1,2) = 2;
 
-	A.elem(2,0) = -3;
+	A.elem(2,0) = 0;
 	A.elem(2,1) = 5;
 	A.elem(2,2) = 1;
 	A.print();
@@ -41,7 +41,7 @@ void houseHolderTest() {
 	delete QT;
 }
 
-void diagonalizacionQRTest() {
+void diagonalizacionQRTest(double precision) {
 	//Matriz simetrica para ver diagonalización
 	Matriz A(3,3);
 	A.elem(0,0) = 1;
@@ -57,7 +57,7 @@ void diagonalizacionQRTest() {
 	A.elem(2,2) = 8;
 	A.print();
 	cout << "Diagonalizo A" << endl;
-	tuple <Matriz*, Matriz*> res = A.diagonalizacionQR(0.01);
+	tuple <Matriz*, Matriz*> res = A.diagonalizacionQR(precision);
 	cout << "Matriz Qk" << endl;
 	get<0>(res)->print();
 	cout << "Matriz Ak" << endl;
@@ -130,6 +130,19 @@ void mediaMatricialTest() {
 	Matriz *media = A.media();
 	cout << "Matriz media" << endl;
 	media->print();
+}
+
+void normaCuadradaVectorial() {
+	cout << "Matriz A" << endl;
+	Matriz A(6,1);
+	A.elem(0,0) = 1;
+	A.elem(1,0) = 2;
+	A.elem(2,0) = 3;
+	A.elem(3,0) = 4;
+	A.elem(4,0) = 5;
+	A.elem(5,0) = 6;
+	A.print();
+	cout << "Norma cuadrado " << A.normaCuadradoVectorial();
 }
 
 void nuevasOperacionseMatriz() {
