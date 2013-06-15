@@ -134,7 +134,9 @@ Matriz* matrizDeMedias(Matriz& trainImages, Matriz& trainLabels, Matriz& Vt) {
 	for(int i=0;i<10;i++) {
 		cout << "Fila de medias " << i << endl;
 		Matriz* media = trainImgTrans[i]->media();
-		cout << "Por rellenar fila de medias, columnas de la media " << media->columnas() << endl;
+		media->transponer();
+		cout << "Norma cuadrado " << media->normaCuadradoVectorial() << endl;;
+		exit(1);
 		for(int j=0;j<media->columnas();j++) {
 			ret->elem(i,j) = media->elem(0,j);
 		}
@@ -170,10 +172,14 @@ int adivinarDigito(Matriz &x, Matriz &medias, Matriz& Vt) {
 
 double adivinarDigitoMasivamente(Matriz &x, Matriz &testLabels, Matriz &medias, Matriz& Vt) {
 	Matriz* transformada = TC(x, Vt); //X queda transpuesto después de esto
+	transformada->transponer();
+	cout << "----------------------------------------------------------" << endl;
+	cout << "Adiviando digitos" << endl;
+	cout << "Transformada filas " << transformada->filas() << " transformada columnas = " << transformada->columnas() << endl;
 	int aciertos = 0;
 	//Para cada (h) columna de transformada (imagenes) veo que digito es
 	for(int h=0;h<testLabels.filas();h++) {
-		double minNorm = 0; //cambiar
+		double minNorm = 0;
 		int minNormIndex = 0;
 		//Consigo la distancia entre la matriz de medias 0 y el vector a comparar
 		for(int j=0;j<transformada->filas();j++) {
@@ -187,16 +193,23 @@ double adivinarDigitoMasivamente(Matriz &x, Matriz &testLabels, Matriz &medias, 
 				normBuf += pow(transformada->elem(j,h) - medias.elem(i,j),2);
 			}
 			normBuf = sqrt(normBuf);
+			//cout << "Norma actual = " << normBuf << " Norma minima = " << minNorm << endl;
 			if(minNorm > normBuf) {
 				minNorm = normBuf;
 				minNormIndex = i;
 			}
 		}
-		if(testLabels.elem(h,1) == minNormIndex) {
+		cout << "Digito de la imagen " << testLabels.elem(h,0) << " digito adivinado = " << minNormIndex << endl;
+		if(testLabels.elem(h,0) == minNormIndex) {
 			aciertos++;
 		}
 	}
 	cout << "Aciertos " << (double)aciertos << endl;
 	cout << "Cantidad de imagenes " << testLabels.filas() << endl;
 	return testLabels.filas()/(double)aciertos;
+}
+
+bool fileExists(const char *fileName) {
+    ifstream infile(fileName);
+    return infile.good();
 }

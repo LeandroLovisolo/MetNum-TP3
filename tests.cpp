@@ -13,11 +13,11 @@ void houseHolderTest() {
 	A.elem(0,1) = -3;
 	A.elem(0,2) = 4;
 
-	A.elem(1,0) = 4;
+	A.elem(1,0) = 0;
 	A.elem(1,1) = 0;
 	A.elem(1,2) = 2;
 
-	A.elem(2,0) = -3;
+	A.elem(2,0) = 0;
 	A.elem(2,1) = 5;
 	A.elem(2,2) = 1;
 	A.print();
@@ -41,7 +41,7 @@ void houseHolderTest() {
 	delete QT;
 }
 
-void diagonalizacionQRTest() {
+void diagonalizacionQRTest(double precision) {
 	//Matriz simetrica para ver diagonalización
 	Matriz A(3,3);
 	A.elem(0,0) = 1;
@@ -57,7 +57,7 @@ void diagonalizacionQRTest() {
 	A.elem(2,2) = 8;
 	A.print();
 	cout << "Diagonalizo A" << endl;
-	tuple <Matriz*, Matriz*> res = A.diagonalizacionQR(0.01);
+	tuple <Matriz*, Matriz*> res = A.diagonalizacionQR(precision);
 	cout << "Matriz Qk" << endl;
 	get<0>(res)->print();
 	cout << "Matriz Ak" << endl;
@@ -67,6 +67,13 @@ void diagonalizacionQRTest() {
 	get<0>(res)->transponer();
 	Matriz *QAQt = (*QA)*(*get<0>(res));
 	QAQt->print();
+	cout << "Matriz Q*Qt" << endl;
+	Matriz* Q = new Matriz(*get<0>(res));
+	get<0>(res)->transponer();
+	Matriz* QQt = (*Q)*(*get<0>(res));
+	QQt->print();
+	delete Q;
+	delete QQt;
 	delete QAQt;
 	delete QA;
 	delete get<0>(res);
@@ -123,4 +130,41 @@ void mediaMatricialTest() {
 	Matriz *media = A.media();
 	cout << "Matriz media" << endl;
 	media->print();
+}
+
+void normaCuadradaVectorial() {
+	cout << "Matriz A" << endl;
+	Matriz A(6,1);
+	A.elem(0,0) = 1;
+	A.elem(1,0) = 2;
+	A.elem(2,0) = 3;
+	A.elem(3,0) = 4;
+	A.elem(4,0) = 5;
+	A.elem(5,0) = 6;
+	A.print();
+	cout << "Norma cuadrado " << A.normaCuadradoVectorial();
+}
+
+void nuevasOperacionseMatriz() {
+	cout << "Matriz A" << endl;
+	Matriz A(1,3);
+	A.elem(0,0) = 1;
+	A.elem(0,1) = 2;
+	A.elem(0,2) = 3;
+	A.print();
+	cout << "Matriz A transpuesta" << endl;
+	Matriz At(A);
+	At.transponer();
+	At.print();
+	Matriz* res = At*A;
+	res->print();
+	cout << "Matriz res por cte" << endl;
+	Matriz* cteRes = (*res)*2;
+	cteRes->print();
+	Matriz* restaCteRes = (*cteRes) - (*cteRes);
+	cout << "Matriz restaCteRes" << endl;
+	restaCteRes->print();
+	delete res;
+	delete cteRes;
+	delete restaCteRes;
 }
