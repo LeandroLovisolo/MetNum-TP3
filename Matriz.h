@@ -40,6 +40,7 @@ public:
 	void save(char* fileName);
 
 	std::tuple <Matriz*, Matriz*> factorizacionHouseHolder();
+	std::tuple <Matriz*, Matriz*> factorizacionHouseHolderDos();
 	std::tuple <Matriz*, Matriz*> diagonalizacionQR(double cota);
 	Matriz* media();
 	Matriz* transformarAMediaCero();

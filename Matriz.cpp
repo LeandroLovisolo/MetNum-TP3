@@ -263,6 +263,63 @@ double Matriz::normaCuadradoVectorial() {
 	return sqrt(acum);
 }
 
+tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolderDos() {
+	Matriz *r = new Matriz(*this);
+	Matriz *q = identidad(_filas);
+	for(int i=0; i<_columnas-1; i++) {
+		cout << "Columna " << i << endl;
+		//Busco la resolución de r
+		Matriz *uRes = r->submatriz(0,_filas-1, i, i);
+		for(int j=0;j<i;j++) {
+			uRes->elem(j,0) = 0;
+		}
+		uRes->elem(i,0) -= uRes->normaCuadradoVectorial();
+		double cte = 2 / pow(uRes->normaCuadradoVectorial(),2);
+		//cout << "Cte problemática " << cte << endl;
+		//cout << "Norma cuadrado vectorial al cuadrado: " <<  pow(uRes->normaCuadradoVectorial(),2) << endl;
+		if(pow(uRes->normaCuadradoVectorial(),2) == 0) {
+			delete uRes;
+			continue;
+		}
+		Matriz* uTRes = new Matriz(*uRes);
+		uTRes->transponer();
+		Matriz* Aku = (*r)*(*uRes);
+		Matriz* AkuUt = (*Aku)*(*uTRes);
+		Matriz* cteAkuUt = (*AkuUt)*cte;
+		Matriz* newR = (*r)-(*cteAkuUt);
+		delete cteAkuUt;
+		delete AkuUt;
+		delete Aku;
+		delete uTRes;
+		delete uRes;
+		//Consigo el Qk correspondiente para devolverlo
+		Matriz* uQ = r->submatriz(i,_filas-1, i, i);
+		Matriz* uTQ = new Matriz(*uQ);
+		uTQ->transponer();
+		Matriz *uQuTQ = (*uQ)*(*uTQ);
+		Matriz *cteuQuTQ = (*uQuTQ)*cte;
+		Matriz *I = identidad(cteuQuTQ->_filas);
+		Matriz *Hk = (*I)-(*cteuQuTQ);
+		Matriz *QTk = identidad(q->_filas);
+		QTk->cambiarSubmatriz(*Hk, i, _filas-1, i, _columnas -1);
+		Matriz *newQ = (*QTk)*(*q);
+		delete uQ;
+		delete uTQ;
+		delete uQuTQ;
+		delete cteuQuTQ;
+		delete I;
+		delete Hk;
+		delete QTk;
+
+		delete r;
+		r = newR;
+		delete q;
+		q = newQ;
+	}
+	q->transponer();
+	return make_tuple(q, r);
+}
+
 tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolder() {
 	Matriz *r = new Matriz(*this);
 	Matriz *q = identidad(_filas);
@@ -272,7 +329,8 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolder() {
 		//cout << "Matriz R" << i << endl;
 		//r->print();
 		Matriz *x = r->submatriz(i,_filas-1, i, i);
-		//cout << "Vector X" << endl;
+		cout << "Submatriz desde fila " << i << " -> " << _filas-1 << " columnas " << i << " -> " << i << endl;
+ 		//cout << "Vector X" << endl;
 		//x->print();
 		//Vector x-y = u
 		x->elem(0,0) -= x->normaCuadradoVectorial();
@@ -280,6 +338,12 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolder() {
 		//x->print();
 		// 2/ (||u||_2)^2
 		double cte = 2 / pow(x->normaCuadradoVectorial(),2);
+		cout << "Cte problemática " << cte << endl;
+		cout << "Norma cuadrado vectorial al cuadrado: " <<  pow(x->normaCuadradoVectorial(),2) << endl;
+		if(pow(x->normaCuadradoVectorial(),2) == 0) {
+			delete x;
+			continue;
+		}
 		Matriz *uT = new Matriz(*x);
 		uT->transponer();
 		//cout << "Vector Ut" << endl;
@@ -370,7 +434,7 @@ tuple <Matriz*, Matriz*> Matriz::diagonalizacionQR(double cota) {
 	int i = 0;
 	while(Ak->sumBajoDiagonal() > cota/*i != 5*/) {
 		cout << "Suma bajo la diagonal " << Ak->sumBajoDiagonal() << endl;
-		tuple <Matriz*, Matriz*> res = Ak->factorizacionHouseHolder();
+		tuple <Matriz*, Matriz*> res = Ak->factorizacionHouseHolderDos();//Ak->factorizacionHouseHolder();
 		//cout << "Matriz Q" << i << endl;
 		//get<0>(res)->print();
 		//cout << "Matriz R" << i << endl;
@@ -388,8 +452,8 @@ tuple <Matriz*, Matriz*> Matriz::diagonalizacionQR(double cota) {
 		//Ak->print();
 		delete get<0>(res);
 		delete get<1>(res);
-		i++;
 	}
+	cout << "Suma bajo la diagonal final" << Ak->sumBajoDiagonal() << endl;
 	//cout << "Iteraciones" << i << endl;
 	return make_tuple(Q, Ak);
 }
