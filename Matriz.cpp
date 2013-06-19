@@ -165,6 +165,7 @@ Matriz* Matriz::operator+(Matriz &m) {
 
 Matriz* Matriz::operator-(Matriz &m) {
 	Matriz* resta = new Matriz(*this);
+	#pragma omp parallel for shared(resta, m)
 	for(int i = 0;i<_filas*_columnas;i++) {
 		resta->vectorMatriz[i] -= m.vectorMatriz[i];
 	}
@@ -179,12 +180,16 @@ Matriz* Matriz::operator*(Matriz &m) {
 	Matriz* producto = new Matriz(_filas, m._columnas);
 	double* vectorM = m.transponerCabeza();
 	double valor;
+	double* vectorMat = vectorMatriz;
+	#pragma omp parallel for shared(vectorMat, vectorM, producto) private(valor)
 	for(int i=0;i<_filas;i++) {
 		for(int j=0;j<m._columnas;j++) {
 			valor = 0;
 			for(int h=0;h<_columnas;h++) {
-				 valor += vectorMatriz[i*_columnas + h] * vectorM[j*m._filas+h];
+				 //valor += vectorMatriz[i*_columnas + h] * vectorM[j*m._filas+h];
+				valor += vectorMat[i*_columnas + h] * vectorM[j*m._filas+h];
 			}
+			//producto->vectorMatriz[i * m._columnas + j] = valor;
 			producto->vectorMatriz[i * m._columnas + j] = valor;
 		}
 	}
@@ -209,6 +214,7 @@ Matriz* Matriz::multiplicarPorInversa(Matriz &M) {
 
 Matriz* Matriz::operator*(double k) {
 	Matriz* producto = new Matriz(*this);
+	#pragma omp parallel for shared(producto)
 	for(int i = 0; i < _filas*_columnas; i++) {
 		producto->vectorMatriz[i] *= k;
 	}
@@ -251,16 +257,67 @@ tuple <Matriz*, Matriz*, Matriz*> Matriz::factorizacionPLU() {
 //Solo funciona con vectores!
 double Matriz::normaCuadradoVectorial() {
 	double acum = 0;
-	/*
-	for(int i=0; i<_filas; i++) {
-		acum += pow(elem(i,0), 2);
-	}
-	return sqrt(acum);
-	*/
 	for(int i = 0; i < _filas; i++) {
 		acum += vectorMatriz[i] * vectorMatriz[i];
 	}
 	return sqrt(acum);
+}
+
+tuple <Matriz*, Matriz*> Matriz::factorizacionGivens() {
+	Matriz* r = new Matriz(*this);
+	Matriz* q = identidad(_filas);
+	Matriz* I = new Matriz(*q);
+	//cout << "Matriz I original" << endl;
+	//I->print();
+	int iteracion = 0;
+	int lastI = -1, lastJ = -1;
+	double x1,x2,norm;
+	for(int j=0; j<_columnas-1; j++) {
+		for(int i = j+1; i<_filas; i++) {
+			//cout << "Iteracion (i,j)=("<<i<<","<<j<<") = " << r->elem(i,j) << endl;
+			if(r->elem(i,j) != 0) {
+				x1 = r->elem(j,j);
+				x2 = r->elem(i,j); //elemento a poner en 0
+				//cout << "x1 = " << x1 << endl;
+				//cout << "x2 = " << x2 << endl;
+				norm = sqrt(abs(x1)*abs(x1)+abs(x2)*abs(x2));
+				//cout << "Norm " << norm << endl;
+				if(norm == 0) continue;
+				iteracion++;
+				cout << "Iteracion "<< iteracion << "(i,j)=("<<i<<","<<j<<") "<< endl;
+				//Cambio los elementos anteriores
+				if(lastI != -1) {
+					//cout << "Entro para poner bien los ultimos numeros" << endl;
+					I->elem(lastI,lastI) = 1;
+					I->elem(lastI,lastJ) = 0;
+					I->elem(lastJ,lastJ) = 1;
+					I->elem(lastJ,lastI) = 0;
+				}
+				//Pongo los nuevos elementos (tomar j como filas, i como cols)
+				lastI = i;
+				lastJ = j;
+				I->elem(i,i) = x1/norm;
+				I->elem(i,j) = -x2/norm;
+				I->elem(j,j) = x1/norm;
+				I->elem(j,i) = x2/norm;
+				//cout << "Matriz I" << endl;
+				//I->print();
+
+				Matriz* newR = (*I)*(*r);
+				//cout << "Matriz R" << endl;
+				//newR->print();
+				delete r;
+				r = newR;
+				Matriz* newQ = (*I)*(*q);
+				delete q;
+				q = newQ;
+			}
+			//cout << "-------------------------------" << endl;
+		}
+	}
+	delete I;
+	q->transponer();
+	return make_tuple(q,r);
 }
 
 tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolderDos() {
@@ -281,19 +338,53 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolderDos() {
 			delete uRes;
 			continue;
 		}
+		// cout << "--------------------------" << endl;
+		// cout << "Matriz uRes" << endl;
+		// uRes->print();
+		// cout << "--------------------------" << endl;
 		Matriz* uTRes = new Matriz(*uRes);
 		uTRes->transponer();
-		Matriz* Aku = (*r)*(*uRes);
-		Matriz* AkuUt = (*Aku)*(*uTRes);
-		Matriz* cteAkuUt = (*AkuUt)*cte;
-		Matriz* newR = (*r)-(*cteAkuUt);
-		delete cteAkuUt;
-		delete AkuUt;
-		delete Aku;
+		Matriz* uTResAk = (*uTRes)*(*r);
+		// cout << "--------------------------" << endl;
+		// cout << "Matriz uTResAk" << endl;
+		// uTResAk->print();
+		// cout << "--------------------------" << endl;
+		Matriz* uResuTResAk = (*uRes)*(*uTResAk);
+		// cout << "--------------------------" << endl;
+		// cout << "Matriz uResuTResAk" << endl;
+		// uResuTResAk->print();
+		// cout << "--------------------------" << endl;
+		Matriz* cteuResuTResAk = (*uResuTResAk)*cte;
+		// cout << "--------------------------" << endl;
+		// cout << "Matriz cteuResuTResAk" << endl;
+		// cteuResuTResAk->print();
+		// cout << "--------------------------" << endl;
+		/*
+		Por si hay errores de precisión (forma super correcta de hacerlo)
+		Matriz* subMcteAkuUt = cteuResuTResAk->submatriz(i,_filas-1, i, _columnas-1);
+		Matriz* cerosSub = ceros(_filas, _columnas);
+		cerosSub->cambiarSubmatriz(*subMcteAkuUt, i,_filas-1, i, _columnas-1);
+		*/
+		Matriz* newR = (*r)-(*cteuResuTResAk);
+		// cout << "-------------------------" << endl;
+		// cout << "Ceros Sub" << endl;
+		// cerosSub->print();
+		// cout << "-------------------------" << endl;
+		//Matriz* newR = (*r)-(*cerosSub);
+		// cout << "--------------------------" << endl;
+		// cout << "Matriz newR" << endl;
+		// newR->print();
+		// cout << "--------------------------" << endl;
+		//delete cerosSub;
+		//delete subMcteAkuUt;
+		delete cteuResuTResAk;
+		delete uResuTResAk;
+		delete uTResAk;
 		delete uTRes;
 		delete uRes;
 		//Consigo el Qk correspondiente para devolverlo
 		Matriz* uQ = r->submatriz(i,_filas-1, i, i);
+		uRes->elem(0,0) -= uQ->normaCuadradoVectorial();
 		Matriz* uTQ = new Matriz(*uQ);
 		uTQ->transponer();
 		Matriz *uQuTQ = (*uQ)*(*uTQ);
@@ -301,7 +392,7 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolderDos() {
 		Matriz *I = identidad(cteuQuTQ->_filas);
 		Matriz *Hk = (*I)-(*cteuQuTQ);
 		Matriz *QTk = identidad(q->_filas);
-		QTk->cambiarSubmatriz(*Hk, i, _filas-1, i, _columnas -1);
+		QTk->cambiarSubmatriz(*Hk, i, _filas-1, i, _columnas-1);
 		Matriz *newQ = (*QTk)*(*q);
 		delete uQ;
 		delete uTQ;
@@ -452,8 +543,10 @@ tuple <Matriz*, Matriz*> Matriz::diagonalizacionQR(double cota) {
 		//Ak->print();
 		delete get<0>(res);
 		delete get<1>(res);
+		i++;
 	}
 	cout << "Suma bajo la diagonal final" << Ak->sumBajoDiagonal() << endl;
+	cout << "Numero de iteraciones realizadas: " << i << endl;
 	//cout << "Iteraciones" << i << endl;
 	return make_tuple(Q, Ak);
 }

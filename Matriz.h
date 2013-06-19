@@ -42,14 +42,15 @@ public:
 	std::tuple <Matriz*, Matriz*> factorizacionHouseHolder();
 	std::tuple <Matriz*, Matriz*> factorizacionHouseHolderDos();
 	std::tuple <Matriz*, Matriz*> diagonalizacionQR(double cota);
+	std::tuple <Matriz*, Matriz*> factorizacionGivens();
 	Matriz* media();
 	Matriz* transformarAMediaCero();
 	double normaCuadradoVectorial();
 	void cambiarSubmatriz(Matriz& submatriz, const int desdeFil, const int hastaFil, const int desdeCol, const int hastaCol);
+	void intercambiarFilas(const int i, const int j);
 
 private:
 	double* transponerCabeza();
-	void intercambiarFilas(const int i, const int j);
 	void intercambiarFilas(const int i, const int j, const int hasta);
 	int filaConMayorAbsEnCol(const int col, const int desde);
 	double sumBajoDiagonal();

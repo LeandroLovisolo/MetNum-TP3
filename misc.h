@@ -21,5 +21,6 @@ Matriz* matrizDeMedias(Matriz& trainImages, Matriz& trainLabels, Matriz& Vt);
 double adivinarDigitoMasivamente(Matriz &x, Matriz &testLabels, Matriz &medias, Matriz& Vt);
 int adivinarDigito(Matriz &x, Matriz &medias, Matriz& Vt);
 bool fileExists(const char *fileName);
+void ordenarAuAv(Matriz& Avectores, Matriz& Avalores);
 
 #endif

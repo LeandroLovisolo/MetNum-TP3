@@ -48,11 +48,14 @@ Matriz* generarVt(Matriz& A) {
 	if(!fileExists((char*)"Vt.mat")) {
 		cout << "Generando matriz Vt" << endl;
 		tuple <Matriz*, Matriz*> res = XtX->diagonalizacionQR(0.1);
-		delete get<1>(res);
-		delete XtX;
 		get<0>(res)->transponer();
 		get<0>(res)->save((char*)"Vt.mat");
+		get<1>(res)->save((char*)"Avalores.mat");
+		cout << "Ordenando autovectores" << endl;
+		ordenarAuAv(*get<0>(res), *get<1>(res));
 		return get<0>(res);
+		delete get<1>(res);
+		delete XtX;
 	}
 	else {
 		cout << "Cargada matriz Vt" << endl;

@@ -213,3 +213,29 @@ bool fileExists(const char *fileName) {
     ifstream infile(fileName);
     return infile.good();
 }
+
+void ordenarAuAv(Matriz& Avectores, Matriz& Avalores) {
+	double autovalores[Avalores.columnas()];
+	//Cargo los Av en un arreglo para hacer más rápida su recorrida
+	for(int i=0;i<Avalores.columnas();i++) {
+		autovalores[i] = abs(Avalores.elem(i,i));
+	}
+	//Transpongo porque los Avectores están en columnas
+	Avectores.transponer();
+	double max = 0;
+	int maxPos = 0;
+	//Selection sort con filas
+	for(int i=0;i<Avalores.columnas();i++) {
+		max = 0;
+		maxPos = i;
+		for(int j=i;j<Avalores.columnas();j++) {
+			if(autovalores[j] > max) {
+				max = autovalores[j];
+				maxPos = j;
+			} 
+		}
+		Avectores.intercambiarFilas(i,maxPos);
+		Avalores.intercambiarFilas(i,maxPos);
+	}
+	Avectores.transponer();
+}
