@@ -8,4 +8,5 @@ void grabarYCargarMatriz();
 void mediaMatricialTest();
 void nuevasOperacionseMatriz();
 void normaCuadradaVectorial();
+void givensTest();
 #endif
