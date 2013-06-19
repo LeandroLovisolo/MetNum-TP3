@@ -13,8 +13,6 @@ void Ayuda(string ejecutable) {
 }
 
 int main(int argc, char *argv[]) {
-	//houseHolderTest();
-	
 	Matriz* trainImages = leerMNISTimages((char*) "train-images.idx3-ubyte");
 	Matriz* trainLabels = leerMNISTlabels((char*) "train-labels.idx1-ubyte");
 	cout << "Leyo las imagenes de entrenamiento" << endl;
@@ -32,5 +30,4 @@ int main(int argc, char *argv[]) {
 	cout << "Matriz de medias" << endl;
 	double aciertos = adivinarDigitoMasivamente(*Xtest,*testLabels,*medias,*Vt);
 	cout << "Porcentaje de aciertos = " << aciertos << endl;
-	
 }
