@@ -2,6 +2,12 @@
 metnum
 *.o
 
+# LaTeX
+*.aux
+*.log
+*.pdf
+*.toc
+
 # Sublime Text
 *.sublime-project
 *.sublime-workspace
