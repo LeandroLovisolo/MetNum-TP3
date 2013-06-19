@@ -1,6 +1,6 @@
 function test_all()
 
-num_images = 4000;
+num_images = 1000;
 num_tests = 500;
 k = 10;
 
@@ -32,9 +32,9 @@ end
 
 X = X / sqrt(columns(X) - 1);
 
-msg('Hallando descomposición SVD...\n');
+msg('Hallando autovectores de X...\n');
 
-[U S V] = svd(X);
+V = autovectores(X);
 
 msg('Transformando imágenes de entrenamiento...\n');
 
@@ -70,6 +70,22 @@ end
 printf('Tests: %d\n', num_tests);
 printf('Aciertos: %d\n', aciertos);
 printf('Tasa de aciertos: %f\n', aciertos * 100 / num_tests);
+
+
+function V = autovectores(X)
+
+% Opcion 1: Usar descomposición SVD
+% [U S V] = svd(X);
+
+% Opcion 2: Usar función eig()
+% [V LAMBDA] = eig(X' * X);
+% [_ i] = sort(diag(LAMBDA), 'descend');
+% V = V * eye(columns(V))(i, :);
+
+% Opcion 3: Usar función diagonalizar()
+[Xk Q] = diagonalizar(X' * X, 1000);
+[_ i] = sort(diag(Xk), 'descend');
+V = Q * eye(columns(Q))(i, :);
 
 
 function T = tc(V, img, k)
