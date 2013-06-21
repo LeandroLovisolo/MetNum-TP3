@@ -13,14 +13,24 @@ function generateV()
 	X = X / sqrt(columns(X) - 1);
 
 	msg('Diagonalizando X...\n');
-
-	[Xk Q] = diagonalizar(X' * X, 1000);
-	[_ i] = sort(diag(Xk), 'descend');
-	V = Q * eye(columns(Q))(i, :);
-
-	saveToCMatrix(V, 'VmatAllimgs.mat');
+	Xt = X' * X;
+	Q = eye(size(Xt)(2));
+	textI = 'Vmat';
+	textF = '.mat';
+	msg('Inicio del loop \n');
+	for i=fliplr(1000:2500:105000)
+		fprintf('El i actual es = %i \n', i);
+		fflush(stdout);
+		[Xk Q] = diagonalizar(Xt, i);
+		msg('Sale de la diagonalizacion \n');
+		fname = strcat(textI,strcat(num2str(i),textF));
+		[_ i] = sort(diag(Xk), 'descend');
+		V = Q * eye(columns(Q))(i, :);
+		saveToCMatrix(V, fname);
+		Xt = Xk;
+	endfor
 
 function msg(m)
 
-printf(m);
+fprintf(m);
 fflush(stdout);
