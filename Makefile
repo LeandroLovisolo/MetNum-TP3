@@ -1,5 +1,5 @@
 CC     = g++
-CFLAGS = -lm -std=c++0x -ggdb -O2 -fopenmp
+CFLAGS = -lm -std=c++0x -ggdb -O2
 OBJ    = $(addsuffix .o, $(basename $(shell find . -name "*.cpp")))
 BIN    = metnum
 

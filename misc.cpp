@@ -91,34 +91,34 @@ Matriz* filtrarPorDigito(unsigned char digito, Matriz& img, Matriz& lab) {
 			count++;
 		}
 	}
-	cout << count << " imagenes con el digito " << (int)digito << endl;
+	//cout << count << " imagenes con el digito " << (int)digito << endl;
 	return ret;
 }
 
 Matriz** tuplaDeDigitos(Matriz& img, Matriz& lab) {
 	Matriz** arr = new Matriz*[10];
 	for(int i=0;i<10;i++) {
-		cout << "-----------------------------------------------------" << endl;
-		cout << "Digito " << i <<" filtrado" << endl;
+		//cout << "-----------------------------------------------------" << endl;
+		//cout << "Digito " << i <<" filtrado" << endl;
 		arr[i] = filtrarPorDigito(i, img, lab);
-		cout << "Columnas = " << arr[i]->columnas() << " filas = " << arr[i]->filas() << endl;
+		//cout << "Columnas = " << arr[i]->columnas() << " filas = " << arr[i]->filas() << endl;
 	}
 	return arr;
 }
 
 Matriz** tuplaDeDigitosTransformados(Matriz** digitos, Matriz &Vt) {
 	Matriz** arr = new Matriz*[10];
-	cout << "Vt columnas = " << Vt.columnas() << " filas = " << Vt.filas() << endl;
+	//cout << "Vt columnas = " << Vt.columnas() << " filas = " << Vt.filas() << endl;
 	for(int i=0;i<10;i++) {
-		cout << "-----------------------------------------------------" << endl;
-		cout << "Transformando digito " << i << endl;
-		cout << "Columnas antes de transformar " << digitos[i]->columnas() << endl;
-		cout << "Filas antes de transformar " << digitos[i]->filas() << endl;
+		//cout << "-----------------------------------------------------" << endl;
+		//cout << "Transformando digito " << i << endl;
+		//cout << "Columnas antes de transformar " << digitos[i]->columnas() << endl;
+		//cout << "Filas antes de transformar " << digitos[i]->filas() << endl;
 		arr[i] = TC(*digitos[i],Vt);
-		cout << "Transponiendo matriz transformada" << endl;
+		//cout << "Transponiendo matriz transformada" << endl;
 		arr[i]->transponer();
-		cout << "Matriz transpuesta" << endl;
-		cout << "Columnas = " << arr[i]->columnas() << " filas = " << arr[i]->filas() << endl;
+		//cout << "Matriz transpuesta" << endl;
+		//cout << "Columnas = " << arr[i]->columnas() << " filas = " << arr[i]->filas() << endl;
 	}
 	return arr;
 }
@@ -130,13 +130,13 @@ Matriz* matrizDeMedias(Matriz& trainImages, Matriz& trainLabels, Matriz& Vt) {
 
 	Matriz** trainImgTrans = tuplaDeDigitosTransformados(filteredTrain, Vt);
 	Matriz* ret = new Matriz(10, Vt.columnas());
-	cout << "Matriz de medias en blanco" << endl;
+	//cout << "Matriz de medias en blanco" << endl;
 	for(int i=0;i<10;i++) {
-		cout << "Fila de medias " << i << endl;
+		//cout << "Fila de medias " << i << endl;
 		Matriz* media = trainImgTrans[i]->media();
-		media->transponer();
-		cout << "Norma cuadrado " << media->normaCuadradoVectorial() << endl;;
-		exit(1);
+		//cout << "Dimensiones de media cols = " << media->columnas() << " fils = " << media->filas() << endl;
+		//media->transponer();
+		//cout << "Norma cuadrado " << media->normaCuadradoVectorial() << endl;;
 		for(int j=0;j<media->columnas();j++) {
 			ret->elem(i,j) = media->elem(0,j);
 		}
@@ -149,19 +149,23 @@ Matriz* matrizDeMedias(Matriz& trainImages, Matriz& trainLabels, Matriz& Vt) {
 
 int adivinarDigito(Matriz &x, Matriz &medias, Matriz& Vt) {
 	Matriz* transformada = TC(x, Vt);
-	double minNorm = 0; //cambiar
+	//cout << "----------------------------------------------------------" << endl;
+	//cout << "Adiviando digitos" << endl;
+	//cout << "Transformada filas " << transformada->filas() << " transformada columnas = " << transformada->columnas() << endl;
+	double minNorm = 0;
 	for(int j=0;j<transformada->filas();j++) {
 		minNorm += pow(transformada->elem(j,0) - medias.elem(0,j),2);
 	}
-	minNorm = sqrt(minNorm);
-
+	minNorm = sqrt(minNorm/(double)transformada->columnas());
+	//cout << "minNorm inicial = " << minNorm << endl;
 	int minNormIndex = 0;
-	for(int i=0;i<10;i++) {
+	for(int i=1;i<10;i++) {
 		double normBuf = 0;
 		for(int j=0;j<transformada->filas();j++) {
-			normBuf = pow(transformada->elem(j,1) - medias.elem(i,j),2);
+			normBuf += pow(transformada->elem(j,0) - medias.elem(i,j),2);
 		}
-		normBuf = sqrt(normBuf);
+		normBuf = sqrt(normBuf/(double)transformada->columnas());
+		//cout << "Norma actual " << normBuf << " vs minNorm " << minNorm << endl;
 		if(minNorm > normBuf) {
 			minNorm = normBuf;
 			minNormIndex = i;
@@ -170,12 +174,31 @@ int adivinarDigito(Matriz &x, Matriz &medias, Matriz& Vt) {
 	return minNormIndex;
 }
 
+
+int adivinarDigitoDeAUno(Matriz &x, Matriz &testLabels, Matriz &medias, Matriz& Vt) {
+	//cout << "----------------------------------------------------------" << endl;
+	//cout << "Adiviando digitos de a uno" << endl;
+	//Me muevo por las imágenes
+	int aciertos = 0;
+	for(int h=0;h<x.filas();h++) {
+		Matriz* imagen = x.submatriz(h,h,0,x.columnas()-1);
+		//cout << "Imagen filas = " << imagen->filas() << " columnas = " << imagen->columnas() << endl;
+		int digito = adivinarDigito(*imagen, medias, Vt);
+		//cout << "Digito de la imagen " << testLabels.elem(h,0) << " digito adivinado = " << digito << endl;
+		if(digito == testLabels.elem(h,0)) {
+			aciertos++;
+		}
+	}
+	//cout << "Aciertos realizados: " << aciertos << endl;
+	return aciertos;
+}
+
 double adivinarDigitoMasivamente(Matriz &x, Matriz &testLabels, Matriz &medias, Matriz& Vt) {
 	Matriz* transformada = TC(x, Vt); //X queda transpuesto después de esto
 	transformada->transponer();
-	cout << "----------------------------------------------------------" << endl;
-	cout << "Adiviando digitos" << endl;
-	cout << "Transformada filas " << transformada->filas() << " transformada columnas = " << transformada->columnas() << endl;
+	//cout << "----------------------------------------------------------" << endl;
+	//cout << "Adiviando digitos" << endl;
+	//cout << "Transformada filas " << transformada->filas() << " transformada columnas = " << transformada->columnas() << endl;
 	int aciertos = 0;
 	//Para cada (h) columna de transformada (imagenes) veo que digito es
 	for(int h=0;h<testLabels.filas();h++) {
@@ -183,23 +206,23 @@ double adivinarDigitoMasivamente(Matriz &x, Matriz &testLabels, Matriz &medias, 
 		int minNormIndex = 0;
 		//Consigo la distancia entre la matriz de medias 0 y el vector a comparar
 		for(int j=0;j<transformada->filas();j++) {
-			minNorm += pow(transformada->elem(j,h) - medias.elem(0,j),2);
+			minNorm += pow(transformada->elem(h,j) - medias.elem(0,j),2);
 		}
-		minNorm = sqrt(minNorm);
+		minNorm = sqrt(minNorm/(double)transformada->filas());
 		//Veo las demás distancias y busco la mínima
 		for(int i=1;i<10;i++) {
 			double normBuf = 0;
 			for(int j=0;j<transformada->filas();j++) {
-				normBuf += pow(transformada->elem(j,h) - medias.elem(i,j),2);
+				normBuf += pow(transformada->elem(h,j) - medias.elem(i,j),2);
 			}
-			normBuf = sqrt(normBuf);
+			normBuf = sqrt(normBuf/(double)transformada->filas());
 			//cout << "Norma actual = " << normBuf << " Norma minima = " << minNorm << endl;
 			if(minNorm > normBuf) {
 				minNorm = normBuf;
 				minNormIndex = i;
 			}
 		}
-		cout << "Digito de la imagen " << testLabels.elem(h,0) << " digito adivinado = " << minNormIndex << endl;
+		//cout << "Digito de la imagen " << testLabels.elem(h,0) << " digito adivinado = " << minNormIndex << endl;
 		if(testLabels.elem(h,0) == minNormIndex) {
 			aciertos++;
 		}
