@@ -27,26 +27,31 @@ function test_diff()
         X(i,:) = X(i,:) - mu;
     end
     X = X / sqrt(columns(X) - 1);
-
-    Xt = X' * X;
-    Q = eye(size(Xt)(2));
-
-    for i=fliplr(1000:1000000:10000000)
+    aciertosPorIteracion = [];
+    Xk = X' * X;
+    Q = eye(size(Xk)(2));
+    %for i=fliplr(1000:1000000:10000000)
     %i = 90033704;
+    for i=1:50
         fprintf('El i actual es = %i \n', i);
         fflush(stdout);
         %textI = 'Vmat';
         %textF = '.mat';
         %fname = strcat(textI,strcat(num2str(i),textF));
         %fname = 'Vmat4.365e+09.mat';
-        %V = readCMatrix(fname);
+        %V = readCMatrix('Vmat91000.mat');
         %V = V';
-        [Xk Q] = diagonalizar(Xt, i);
+        %[Xk Q] = diagonalizar(Xt, i);
         %msg('Sale de la diagonalizacion \n');
+        [Qj R] = qr(Xk);
+        Xk = R*Qj;
+        Q = Qj*Q;
+
         [_ i] = sort(diag(Xk), 'descend');
         V = Q * eye(columns(Q))(i, :);
         V = V';
-        Xt = Xk;
+        %V = Xt';
+        %Xt = Xk;
 
         %msg('Transformando imágenes de entrenamiento...\n');
         Ts = {[], [], [], [], [], [], [], [], [], []};
@@ -75,10 +80,12 @@ function test_diff()
                 aciertos++;
             endif
         end
-
         %printf('Aciertos: %d\n', aciertos);
         printf('Tasa de aciertos: %f\n', aciertos * 100 / 10000);
-    endfor
+        aciertosPorIteracion(1, end + 1) = aciertos * 100 / 10000;
+   endfor
+
+   save('aciertos_diferentes_cotas.mat', aciertosPorIteracion);
 
 
 function V = autovectores(X)
