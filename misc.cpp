@@ -156,7 +156,7 @@ int adivinarDigito(Matriz &x, Matriz &medias, Matriz& Vt) {
 	for(int j=0;j<transformada->filas();j++) {
 		minNorm += pow(transformada->elem(j,0) - medias.elem(0,j),2);
 	}
-	minNorm = sqrt(minNorm/(double)transformada->columnas());
+	minNorm = sqrt(minNorm);
 	//cout << "minNorm inicial = " << minNorm << endl;
 	int minNormIndex = 0;
 	for(int i=1;i<10;i++) {
@@ -164,7 +164,7 @@ int adivinarDigito(Matriz &x, Matriz &medias, Matriz& Vt) {
 		for(int j=0;j<transformada->filas();j++) {
 			normBuf += pow(transformada->elem(j,0) - medias.elem(i,j),2);
 		}
-		normBuf = sqrt(normBuf/(double)transformada->columnas());
+		normBuf = sqrt(normBuf);
 		//cout << "Norma actual " << normBuf << " vs minNorm " << minNorm << endl;
 		if(minNorm > normBuf) {
 			minNorm = normBuf;
@@ -175,13 +175,13 @@ int adivinarDigito(Matriz &x, Matriz &medias, Matriz& Vt) {
 }
 
 
-int adivinarDigitoDeAUno(Matriz &x, Matriz &testLabels, Matriz &medias, Matriz& Vt) {
+int adivinarDigitoDeAUno(Matriz &trainSet, Matriz &testLabels, Matriz &medias, Matriz& Vt) {
 	//cout << "----------------------------------------------------------" << endl;
 	//cout << "Adiviando digitos de a uno" << endl;
 	//Me muevo por las imágenes
 	int aciertos = 0;
-	for(int h=0;h<x.filas();h++) {
-		Matriz* imagen = x.submatriz(h,h,0,x.columnas()-1);
+	for(int h=0;h<trainSet.filas();h++) {
+		Matriz* imagen = trainSet.submatriz(h,h,0,trainSet.columnas()-1);
 		//cout << "Imagen filas = " << imagen->filas() << " columnas = " << imagen->columnas() << endl;
 		int digito = adivinarDigito(*imagen, medias, Vt);
 		//cout << "Digito de la imagen " << testLabels.elem(h,0) << " digito adivinado = " << digito << endl;
