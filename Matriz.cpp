@@ -165,7 +165,6 @@ Matriz* Matriz::operator+(Matriz &m) {
 
 Matriz* Matriz::operator-(Matriz &m) {
 	Matriz* resta = new Matriz(*this);
-	#pragma omp parallel for shared(resta, m)
 	for(int i = 0;i<_filas*_columnas;i++) {
 		resta->vectorMatriz[i] -= m.vectorMatriz[i];
 	}
@@ -175,21 +174,17 @@ Matriz* Matriz::operator-(Matriz &m) {
 Matriz* Matriz::operator*(Matriz &m) {
 	if(_columnas != m.filas()) {
 		cout << "Producto de matrices invalido" << endl;
+		cout << "Columnas de matriz izquierda = " << _columnas << " filas derecha = " << m.filas() << endl;
 		exit(1);
 	}
 	Matriz* producto = new Matriz(_filas, m._columnas);
 	double* vectorM = m.transponerCabeza();
-	double valor;
-	double* vectorMat = vectorMatriz;
-	#pragma omp parallel for shared(vectorMat, vectorM, producto) private(valor)
 	for(int i=0;i<_filas;i++) {
 		for(int j=0;j<m._columnas;j++) {
-			valor = 0;
+			double valor = 0;
 			for(int h=0;h<_columnas;h++) {
-				 //valor += vectorMatriz[i*_columnas + h] * vectorM[j*m._filas+h];
-				valor += vectorMat[i*_columnas + h] * vectorM[j*m._filas+h];
+				 valor += vectorMatriz[i*_columnas + h] * vectorM[j*m._filas+h];
 			}
-			//producto->vectorMatriz[i * m._columnas + j] = valor;
 			producto->vectorMatriz[i * m._columnas + j] = valor;
 		}
 	}
@@ -214,7 +209,6 @@ Matriz* Matriz::multiplicarPorInversa(Matriz &M) {
 
 Matriz* Matriz::operator*(double k) {
 	Matriz* producto = new Matriz(*this);
-	#pragma omp parallel for shared(producto)
 	for(int i = 0; i < _filas*_columnas; i++) {
 		producto->vectorMatriz[i] *= k;
 	}
