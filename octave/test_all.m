@@ -6,8 +6,8 @@ k = 10;
 
 msg('Cargando imágenes de entrenamiento...\n');
 
-images = leerMNISTimage('../train-images-idx3-ubyte');
-labels = leerMNISTlabel('../train-labels-idx1-ubyte');
+images = leerMNISTimage('../train-images.idx3-ubyte');
+labels = leerMNISTlabel('../train-labels.idx1-ubyte');
 
 msg('Filtrando imágenes de entrenamiento por dígito...\n');
 
@@ -54,8 +54,8 @@ end
 
 msg('Cargando imágenes de prueba...\n');
 
-images = leerMNISTimage('../t10k-images-idx3-ubyte');
-labels = leerMNISTlabel('../t10k-labels-idx1-ubyte');
+images = leerMNISTimage('../t10k-images.idx3-ubyte');
+labels = leerMNISTlabel('../t10k-labels.idx1-ubyte');
 
 msg('Calculando tasa de aciertos...\n');
 
@@ -75,7 +75,7 @@ printf('Tasa de aciertos: %f\n', aciertos * 100 / num_tests);
 function V = autovectores(X)
 
 % Opcion 1: Usar descomposición SVD
-% [U S V] = svd(X);
+[U S V] = svd(X);
 
 % Opcion 2: Usar función eig()
 % [V LAMBDA] = eig(X' * X);
@@ -83,9 +83,9 @@ function V = autovectores(X)
 % V = V * eye(columns(V))(i, :);
 
 % Opcion 3: Usar función diagonalizar()
-[Xk Q] = diagonalizar(X' * X, 1000);
-[_ i] = sort(diag(Xk), 'descend');
-V = Q * eye(columns(Q))(i, :);
+% [Xk Q] = diagonalizar(X' * X, 1000);
+% [_ i] = sort(diag(Xk), 'descend');
+% V = Q * eye(columns(Q))(i, :);
 
 
 function T = tc(V, img, k)

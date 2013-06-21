@@ -171,10 +171,10 @@ Como la matriz de covarianzas es simétrica, según el teorema, esta tiene una b
 Utilizando la propiedad de que las matrices simétricas son diagonalizables, se construye el siguiente algoritmo utilizando algún método de factorización QR.
 
 \begin{algorithmic}
-	\WHILE{Cota elegida}
-		\STATE FactorizaciónQR($A_k$) $\rightarrow Q_k R_k$
-		\STATE $A_{k+1} \leftarrow R_k Q_k$
-	\ENDWHILE
+  \WHILE{Cota elegida}
+    \STATE FactorizaciónQR($A_k$) $\rightarrow Q_k R_k$
+    \STATE $A_{k+1} \leftarrow R_k Q_k$
+  \ENDWHILE
 \end{algorithmic}
 
 
@@ -209,7 +209,7 @@ Este experimento se replicó con diferentes cantidades de imágenes de entrenami
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Resultados															 %%
+%% Resultados                                                                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -220,6 +220,13 @@ Este experimento se replicó con diferentes cantidades de imágenes de entrenami
   \includegraphics[width=15cm]{aciertosVsK.png}
   \caption{Resultados con diferentes K utilizando cota 1000 para generar V}
 \end{figure}
+
+\begin{figure}[H]
+  \centering
+  \include{tasas-vs-k}
+  \caption{Tasa de aciertos en función de k}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Discusión                                                                 %%
