@@ -6,14 +6,17 @@ function X = readCMatrix(fname)
 		fname
 		fflush(stdout);
 	else
-		fprintf('Archivo abierto \n')
+		fprintf('Archivo abierto \n');
 		fflush(stdout);
 	endif
-  	ncols = fread(fp,1,'uint32');
-  	nrows = fread(fp,1,'uint32');
-  	trans = fread(fp,1, 'uchar');
+  	ncols = fread(fp,1,'uint32', 0,  'native');
+  	nrows = fread(fp,1,'uint32', 0,  'native');
+  	trans = fread(fp,1, 'uchar', 0,  'native');
   	X = zeros(nrows, ncols);
-	for i=1:2
+	for i=1:nrows
 		fila = (fread(fp,ncols,'double')');
-		X(i,1:end) = fila(1,1:ncols);
+		%size(fila)
+		X(i,1:end) = fila(1,1:end);
 	endfor
+	%fread(fp,X,'double', 0,  'native')
+	fclose(fp);
