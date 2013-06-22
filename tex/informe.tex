@@ -223,10 +223,19 @@ A continuación, tomamos la matriz diagonal $A$ y la matriz ortogonal $R$ obteni
 
 \subsection{Experimentos realizados}
 
-En todos los experimentos explicados a continuación se utilizó la base de datos de dígitos manuscritos MNIST\footnote{http://yann.lecun.com/exdb/mnist/}.
+Realizamos una serie de experimentos haciendo variar la cantidad de coeficientes principales $k$ y la cantidad de iteraciones $i$ del algoritmo QR, de manera de poder hallar las configuraciones que produzcan las mejores tasas de aciertos posibles.
+
+En todos los experimentos se utilizó la base de datos de dígitos manuscritos MNIST\footnote{http://yann.lecun.com/exdb/mnist/}. En cada caso se generó la matriz de covarianza empleando los 60,000 ejemplares de entrenamiento, y se computó la tasa de aciertos identificando los 10,000 ejemplares de prueba.
 
 
+\subsubsection{Tasa de acierto en función de número de iteraciones del algoritmo QR}
 
+Llevamos a cabo 50 iteraciones del algoritmo QR, tomamos los autovectores aproximados en cada iteración del algoritmo y los utilizamos para computar la tasa de aciertos del método para $k = 600$.
+
+
+\subsubsection{Tasa de acierto en función de cantidad de coeficientes principales}
+
+Evaluamos el método para valores de $k = 1, \ldots 100$, utilizando una cota de error $e = 1000$ como criterio de parada del algoritmo QR.
 
 
 % Se realizó la implementación en C++ utilizando la clase Matriz utilizada anteriormente en el TP2 de la materia. A esta se le agregaron entre otros, los métodos de House Holder y Givens para la realización de la diagonalización mediante el método QR de la matriz de covarianza.
@@ -263,19 +272,18 @@ En todos los experimentos explicados a continuación se utilizó la base de dato
 
 \begin{figure}[H]
   \centering
-  \include{tasas-vs-k}
-  \caption{Tasa de aciertos en función de $k$}
-  \label{tasas-vs-k}
+  \include{tasas-vs-iteraciones}
+  \caption{Tasa de aciertos en función de número $i$ de iteraciones del algoritmo QR.}
+  \label{tasas-vs-iteraciones}
 \end{figure}
 
 
 \begin{figure}[H]
   \centering
-  PENDIENTE
-  \caption{Tasa de aciertos en función de cota de error del algoritmo QR}
-  \label{tasas-vs-cota}
+  \include{tasas-vs-k}
+  \caption{Tasa de aciertos en función de número de coeficientes principales $k$.}
+  \label{tasas-vs-k}
 \end{figure}
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -287,7 +295,7 @@ En todos los experimentos explicados a continuación se utilizó la base de dato
 
 Observamos un aumento consistente de la tasa de aciertos al incrementar la cantidad de coeficientes principales $k$. Sin embargo, las mejoras en la cantidad de aciertos disminuye considerablemente para valores de $k$ mayores a 40, como se aprecia en la figura \ref{tasas-vs-k}. Esto es de esperar, ya que los coeficientes principales de índices pequeños son los que más información aportan a la imagen.
 
-De manera similar, notamos mejoras en la tasa de aciertos al reducir la cota de error $e$ empleada en el algoritmo QR para la aproximación de autovectores de la matriz de covarianza. La tasa de aciertos se estabiliza alrededor del 80\% para valores $e < *NUMERO*$. Ver figura \ref{tasas-vs-cota}.
+De manera similar, notamos mejoras en la tasa de aciertos al reducir la cota de error $e$ empleada en el algoritmo QR para la aproximación de autovectores de la matriz de covarianza. La tasa de aciertos se estabiliza alrededor del 80\% para valores $e < *NUMERO*$. Ver figura \ref{tasas-vs-iteraciones}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -297,7 +305,7 @@ De manera similar, notamos mejoras en la tasa de aciertos al reducir la cota de 
 
 \section{Conclusiones}
 
-Identificamos la configuración $k = 40$, $e = *NUMERO*$, que arroja una tasa de aciertos de 82\%, como la configuración óptima para aplicaciones que requieren un uso eficiente del tiempo. Ver figuras \ref{tasas-vs-k} y \ref{tasas-vs-cota}.
+Identificamos la configuración $k = 40$, $e = *NUMERO*$, que arroja una tasa de aciertos de 82\%, como la configuración óptima para aplicaciones que requieren un uso eficiente del tiempo. Ver figuras \ref{tasas-vs-k} y \ref{tasas-vs-iteraciones}.
 
 Se puede obtener una tasa de aciertos superior aumentando la cantidad de coeficientes principales empleada y reduciendo la cota de error del algoritmo QR si así se desea, pero la mejora es muy pequeña comparado con el tiempo extra de ejecución que requiere. Por ejemplo, la configuración $k = 784$ arroja una tasa de aciertos de *NUMERO*\%, pero requiere el 1960\% del tiempo de ejecución que $k = 40$ (784 vs. 40 productos internos, respectivamente.)
 
