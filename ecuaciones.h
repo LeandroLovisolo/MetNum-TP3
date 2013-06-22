@@ -2,7 +2,7 @@
 #define ECUACIONES_H_
 #include "Matriz.h"
 
-Matriz* matrizDeCovarianza(Matriz& A);
+Matriz* matrizX(Matriz& A);
 Matriz* TC(Matriz& x, Matriz&Vt);
 Matriz* generarVt(Matriz& A);
 

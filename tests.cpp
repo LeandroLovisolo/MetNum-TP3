@@ -4,29 +4,38 @@
 #include "misc.h"
 using namespace std;
 
-void productoParalelo() {
-	Matriz A(3,3);
-	A.elem(0,0) = 0;
-	A.elem(0,1) = -3;
-	A.elem(0,2) = 4;
+void ordenarTest() {
+	cout << "Matriz de autovalores " << endl;
+	Matriz Autoval(3,3);
+	Autoval.elem(0,0) = 3;
+	Autoval.elem(0,1) = 0;
+	Autoval.elem(0,2) = 0;
 
-	A.elem(1,0) = 4;
-	A.elem(1,1) = 0;
-	A.elem(1,2) = 2;
+	Autoval.elem(1,0) = 0;
+	Autoval.elem(1,1) = 8;
+	Autoval.elem(1,2) = 0;
 
-	A.elem(2,0) = -3;
-	A.elem(2,1) = 5;
-	A.elem(2,2) = 1;
-	cout << "Matriz A" << endl;
-	A.print();
-	cout << "Matriz At" << endl;
-	Matriz At(A);
-	At.transponer();
-	At.print();
-	cout << "Matriz At*A" << endl;
-	Matriz *res = A*At;
-	res->print();
-	delete res;
+	Autoval.elem(2,0) = 0;
+	Autoval.elem(2,1) = 0;
+	Autoval.elem(2,2) = 9;
+	Autoval.print();
+	cout << "Matriz de autovectores " << endl;
+	Matriz Autovect(3,3);
+	Autovect.elem(0,0) = 1;
+	Autovect.elem(0,1) = 4;
+	Autovect.elem(0,2) = 7;
+
+	Autovect.elem(1,0) = 2;
+	Autovect.elem(1,1) = 5;
+	Autovect.elem(1,2) = 8;
+
+	Autovect.elem(2,0) = 3;
+	Autovect.elem(2,1) = 6;
+	Autovect.elem(2,2) = 9;
+	Autovect.print();
+	ordenarAuAv(Autovect, Autoval);
+	cout << "Despues de ordenar" << endl;
+	Autovect.print();
 }
 
 void givensTest() {
@@ -84,7 +93,7 @@ void houseHolderTest() {
 	A.elem(2,2) = 1;
 	A.print();
 	cout << "Matriz Q" << endl;
-	tuple <Matriz*, Matriz*> res = A.factorizacionHouseHolderDos();
+	tuple <Matriz*, Matriz*> res = A.factorizacionHouseHolder();
 	get<0>(res)->print();
 	cout << "Matriz R" << endl;
 	get<1>(res)->print();

@@ -9,6 +9,6 @@ void mediaMatricialTest();
 void nuevasOperacionseMatriz();
 void normaCuadradaVectorial();
 void givensTest();
-void productoParalelo();
+void ordenarTest();
 
 #endif
