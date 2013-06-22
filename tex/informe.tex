@@ -223,10 +223,19 @@ A continuación, tomamos la matriz diagonal $A$ y la matriz ortogonal $R$ obteni
 
 \subsection{Experimentos realizados}
 
-En todos los experimentos explicados a continuación se utilizó la base de datos de dígitos manuscritos MNIST\footnote{http://yann.lecun.com/exdb/mnist/}.
+Realizamos una serie de experimentos haciendo variar la cantidad de coeficientes principales $k$ y la cantidad de iteraciones $i$ del algoritmo QR, de manera de poder hallar las configuraciones que produzcan las mejores tasas de aciertos posibles.
+
+En todos los experimentos se utilizó la base de datos de dígitos manuscritos MNIST\footnote{http://yann.lecun.com/exdb/mnist/}. En cada caso se generó la matriz de covarianza empleando los 60,000 ejemplares de entrenamiento, y se computó la tasa de aciertos identificando los 10,000 ejemplares de prueba.
 
 
+\subsubsection{Tasa de acierto en función de número de iteraciones del algoritmo QR}
 
+Llevamos a cabo 50 iteraciones del algoritmo QR, tomamos los autovectores aproximados en cada iteración del algoritmo y los utilizamos para computar la tasa de aciertos del método para $k = 600$.
+
+
+\subsubsection{Tasa de acierto en función de cantidad de coeficientes principales}
+
+Evaluamos el método para valores de $k = 1, \ldots 100$, utilizando una cota de error $e = 1000$ como criterio de parada del algoritmo QR.
 
 
 % Se realizó la implementación en C++ utilizando la clase Matriz utilizada anteriormente en el TP2 de la materia. A esta se le agregaron entre otros, los métodos de House Holder y Givens para la realización de la diagonalización mediante el método QR de la matriz de covarianza.
@@ -264,7 +273,7 @@ En todos los experimentos explicados a continuación se utilizó la base de dato
 \begin{figure}[H]
   \centering
   \include{tasas-vs-iteraciones}
-  \caption{Tasa de aciertos en función de número iteraciones del algoritmo QR}
+  \caption{Tasa de aciertos en función de número $i$ de iteraciones del algoritmo QR.}
   \label{tasas-vs-iteraciones}
 \end{figure}
 
@@ -272,7 +281,7 @@ En todos los experimentos explicados a continuación se utilizó la base de dato
 \begin{figure}[H]
   \centering
   \include{tasas-vs-k}
-  \caption{Tasa de aciertos en función de $k$}
+  \caption{Tasa de aciertos en función de número de coeficientes principales $k$.}
   \label{tasas-vs-k}
 \end{figure}
 
