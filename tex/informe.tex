@@ -39,6 +39,8 @@
 }
 %%%%%%%%%% Configuración de Fancyhdr - Fin %%%%%%%%%%
 
+\newcommand{\real}{\mathbb{R}}
+
 \begin{document}
 
 
@@ -184,28 +186,71 @@ Utilizando la propiedad de que las matrices simétricas son diagonalizables, se 
 
 
 \section{Desarrollo}
-Se realizó la implementación en C++ utilizando la clase Matriz utilizada anteriormente en el TP2 de la materia. A esta se le agregaron entre otros, los métodos de House Holder y Givens para la realización de la diagonalización mediante el método QR de la matriz de covarianza.
 
-La implementación de Givens resultó ser demasiado lenta (debido a la naturaleza de la matriz Mx) a comparación de la de House Holder a la hora de diagonalizar por lo que la diagonalización de la matriz de covarianza fué realizada mediante House Holder.
 
-El criterio de parada o cota utilizada para el método de diagonalización fue la suma de los elementos por debajo de la diagonal.
+\subsection{Método}
 
-Una vez obtenida la matriz de autovectores mediante el método de diagonalización, se reordenaron los autovectores y autovalores asociados de forma decreciente en valor absoluto.
+Dado un conjunto de $n$ imágenes de entrenamiento $\{x_1, \ldots x_n\}$ con $x_i \in \real^{m \times m}$ y una imagen $x$ que no pertenece al conjunto anterior, queremos identificar el dígito $d$ representado por la imagen $x$.
 
-El método elegido para la detección de dígitos fué el siguiente:
-\begin{enumerate}
-\item Del set de entrenamiento, se filtró las imágenes (filas de la matríz de imágenes MISNT) según cáda dígito (0-9) y se armó nuevas matrices con estas.
+Sean $X_0, \ldots X_9$ los conjuntos de imágenes de entrenamiento etiquetadas con los dígitos $0, \ldots 9$, respectivamente, y sea $x_j^i \in X_i$ la $j$-ésima imagen etiquetada con el dígito $i$.
 
-\item A cada matríz con las imágenes de los dígitos filtrados se les aplicó $TC(X_{0..9})$ dónde $TC(X) = V^{t} * X^{t}$ realizando una transformación de todas las imágenes en la matriz de cáda dígito.
+Definimos la \textit{transformada característica media} del dígito $i$ como:
 
-$V^{t}$ es reducida según el valor de columnas k elegidas para comprobar la efectividad del método SVD ante la eliminación de la redundancia.
+$$
+tc_i = \frac{\sum_{j=1}^{|X_i|}{tc(x_j^i)}}
+            {|X_i|}
+$$
 
-\item Se creó una nueva matriz a la que llamaremos "matriz de medias" la cuál contiene en sus 10 filas, las medias de las columnas de las matrices filtradas por dígitos y transformadas.
+Hallamos el dígito $d$, representado por la imagen $x$, de la siguiente manera:
 
-\item Dado el set de pruebas, se procedió a transformar las imágenes (filas de la matriz obtenida para tests de MNST) utilizando $TC()$ , se les calculó su media y se la comparó con las filas de la matriz de medias con el objetivo de encontrar la fila que produzca el menor error cuadrático entre las diferentes medias y la media obtenida, pudiendo así elegir el dígito correspondiente a la fila que tuviera menor error cuadrático.
-\end{enumerate}
+$$
+d = \min_{i} || tc_i - tc(x) ||_2
+$$
 
-Este experimento se replicó con diferentes cantidades de imágenes de entrenamiento, con diferentes k's para el cálculo de $TC()$ y con diferentes cotas a la hora del cálculo de autovalores y autovectores.
+Es decir, identificamos el dígito correspondiente a la imagen $x$ como el dígito cuya transformada característica media se encuentra a menor distancia euclídea de la transformada característica de la imagen $x$.
+
+
+\subsection{Aproximación de autovectores}
+
+Aplicamos el algoritmo QR para aproximar los autovectores de la matriz de covarianza de las imágenes de entrenamiento $\{x_1, \ldots x_n\}$. 
+
+Como criterio de parada, empleamos una cota superior para la suma del módulo de los elementos por debajo de la diagonal principal de la matriz $A_{k+1}$ obtenida luego de la $k$-ésima iteración del algoritmo.
+
+Implementamos un método de descomposición QR utilizando transformaciones de Householder. La implementación inicial de este método empleaba transformaciones de Givens, pero esta técnica resultó demasiado lenta, por lo que luego fue reemplazado por la implementación actual basada en reflectores.
+
+A continuación, tomamos la matriz diagonal $A$ y la matriz ortogonal $R$ obtenidas de la salida del algoritmo QR. Recordemos que los elementos $a_ii$ de la diagonal de la matriz $A$ aproximan los autovalores de la matriz de covarianza, mientras que la $i$-ésima columna de la matriz $Q$ contiene una aproximación al autovector asociado al autovalor $a_ii$. Para terminar, reordenamos los autovectores por autovalor asociado, de forma decreciente.
+
+
+\subsection{Experimentos realizados}
+
+En todos los experimentos explicados a continuación se utilizó la base de datos de dígitos manuscritos MNIST\footnote{http://yann.lecun.com/exdb/mnist/}.
+
+
+
+
+
+% Se realizó la implementación en C++ utilizando la clase Matriz utilizada anteriormente en el TP2 de la materia. A esta se le agregaron entre otros, los métodos de House Holder y Givens para la realización de la diagonalización mediante el método QR de la matriz de covarianza.
+
+% La implementación de Givens resultó ser demasiado lenta (debido a la naturaleza de la matriz Mx) a comparación de la de House Holder a la hora de diagonalizar por lo que la diagonalización de la matriz de covarianza fué realizada mediante House Holder.
+
+% El criterio de parada o cota utilizada para el método de diagonalización fue la suma de los elementos por debajo de la diagonal.
+
+% Una vez obtenida la matriz de autovectores mediante el método de diagonalización, se reordenaron los autovectores y autovalores asociados de forma decreciente en valor absoluto.
+
+% El método elegido para la detección de dígitos fué el siguiente:
+% \begin{enumerate}
+% \item Del set de entrenamiento, se filtró las imágenes (filas de la matríz de imágenes MISNT) según cáda dígito (0-9) y se armó nuevas matrices con estas.
+
+% \item A cada matríz con las imágenes de los dígitos filtrados se les aplicó $TC(X_{0..9})$ dónde $TC(X) = V^{t} * X^{t}$ realizando una transformación de todas las imágenes en la matriz de cáda dígito.
+
+% $V^{t}$ es reducida según el valor de columnas k elegidas para comprobar la efectividad del método SVD ante la eliminación de la redundancia.
+
+% \item Se creó una nueva matriz a la que llamaremos "matriz de medias" la cuál contiene en sus 10 filas, las medias de las columnas de las matrices filtradas por dígitos y transformadas.
+
+% \item Dado el set de pruebas, se procedió a transformar las imágenes (filas de la matriz obtenida para tests de MNST) utilizando $TC()$ , se les calculó su media y se la comparó con las filas de la matriz de medias con el objetivo de encontrar la fila que produzca el menor error cuadrático entre las diferentes medias y la media obtenida, pudiendo así elegir el dígito correspondiente a la fila que tuviera menor error cuadrático.
+% \end{enumerate}
+
+% Este experimento se replicó con diferentes cantidades de imágenes de entrenamiento, con diferentes k's para el cálculo de $TC()$ y con diferentes cotas a la hora del cálculo de autovalores y autovectores.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -258,7 +303,7 @@ Se puede obtener una tasa de aciertos superior aumentando la cantidad de coefici
 
 La principal ventaja de este método es su facilidad de implementación. Si disponemos previamente de las aproximaciones de los autovectores de la matriz de covarianza y las transformadas características medias de cada dígito, podemos identificar un dígito manuscrito cualquiera computando $k$ productos internos y 10 normas euclídeas. Sin embargo, la tasa de aciertos que arroja este método es muy pequeña para la mayoría de las aplicaciones: una tasa del 80\% identifica incorrectamente 1 de cada 5 dígitos.
 
-Recomendamos el uso de este método para aplicaciones de baja prioridad y en donde el costo de cometer un error es muy pequeño (ejemplo: identificación de CAPTCHAS\footnote{http://en.wikipedia.org/wiki/CAPTCHA}.) Para aplicaciones críticas recomendamos aplicar técnicas alternativas.
+Recomendamos el uso de este método para aplicaciones de baja prioridad y en donde el costo de cometer un error es muy pequeño (ejemplo: identificación de CAPTCHAs\footnote{http://en.wikipedia.org/wiki/CAPTCHA}.) Para aplicaciones críticas recomendamos aplicar técnicas alternativas.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
