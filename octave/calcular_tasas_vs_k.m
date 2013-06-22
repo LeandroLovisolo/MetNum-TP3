@@ -1,8 +1,8 @@
-function calcular_tasas()
+function calcular_tasas_vs_k()
 
 num_images = 60000;
 num_tests = 10000;
-rango_k = 1:100;
+rango_k = 1:784;
 
 msg('Cargando imágenes de entrenamiento...\n');
 
@@ -82,7 +82,9 @@ end
 
 msg('Generando tasas.mat...\n');
 
-save('tasas.mat', 'tasas');
+tasas_vs_k = tasas;
+
+save('tasas_vs_k.mat', 'tasas_vs_k');
 
 function V = autovectores(X)
 
