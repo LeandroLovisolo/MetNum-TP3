@@ -270,13 +270,14 @@ Evaluamos el método para valores de $k = 1, \ldots 100$, utilizando una cota de
 \section{Resultados}
 
 
+Presentamos a continuación los resultados de los experimentos explicados anteriormente.
+
 \begin{figure}[H]
   \centering
   \include{tasas-vs-iteraciones}
   \caption{Tasa de aciertos en función de número $i$ de iteraciones del algoritmo QR.}
   \label{tasas-vs-iteraciones}
 \end{figure}
-
 
 \begin{figure}[H]
   \centering
@@ -293,9 +294,9 @@ Evaluamos el método para valores de $k = 1, \ldots 100$, utilizando una cota de
 
 \section{Discusión}
 
-Observamos un aumento consistente de la tasa de aciertos al incrementar la cantidad de coeficientes principales $k$. Sin embargo, las mejoras en la cantidad de aciertos disminuye considerablemente para valores de $k$ mayores a 40, como se aprecia en la figura \ref{tasas-vs-k}. Esto es de esperar, ya que los coeficientes principales de índices pequeños son los que más información aportan a la imagen.
+Observamos una fluctuación en la tasa de aciertos al aumentar el número de iteraciones $i$ del algoritmo QR. Ésta tiende a estabilizarse para valores grandes de $i$. Ver figura \ref{tasas-vs-iteraciones}. Luego de realizar este experimento, decidimos para los siguientes experimentos tomar como criterio de parada la cota de error $e = 1000$, que se alcanza luego de aproximadamente 600 iteraciones.
 
-De manera similar, notamos mejoras en la tasa de aciertos al reducir la cota de error $e$ empleada en el algoritmo QR para la aproximación de autovectores de la matriz de covarianza. La tasa de aciertos se estabiliza alrededor del 80\% para valores $e < *NUMERO*$. Ver figura \ref{tasas-vs-iteraciones}.
+Observamos un aumento consistente de la tasa de aciertos al incrementar la cantidad de coeficientes principales $k$. Sin embargo, las mejoras en la cantidad de aciertos disminuye considerablemente para valores de $k$ mayores a 40, como se aprecia en la figura \ref{tasas-vs-k}. Esto es de esperar, ya que los coeficientes principales de índices pequeños son los que más información aportan a la imagen.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -305,9 +306,9 @@ De manera similar, notamos mejoras en la tasa de aciertos al reducir la cota de 
 
 \section{Conclusiones}
 
-Identificamos la configuración $k = 40$, $e = *NUMERO*$, que arroja una tasa de aciertos de 82\%, como la configuración óptima para aplicaciones que requieren un uso eficiente del tiempo. Ver figuras \ref{tasas-vs-k} y \ref{tasas-vs-iteraciones}.
+Identificamos la configuración $k = 40$, $e = 1000$, que arroja una tasa de aciertos de 82\%, como la configuración óptima para aplicaciones que requieren un uso eficiente del tiempo. Ver figuras \ref{tasas-vs-iteraciones} y \ref{tasas-vs-k}.
 
-Se puede obtener una tasa de aciertos superior aumentando la cantidad de coeficientes principales empleada y reduciendo la cota de error del algoritmo QR si así se desea, pero la mejora es muy pequeña comparado con el tiempo extra de ejecución que requiere. Por ejemplo, la configuración $k = 784$ arroja una tasa de aciertos de *NUMERO*\%, pero requiere el 1960\% del tiempo de ejecución que $k = 40$ (784 vs. 40 productos internos, respectivamente.)
+Se puede obtener una tasa de aciertos superior aumentando la cantidad de coeficientes principales empleada y reduciendo la cota de error del algoritmo QR si así se desea, pero la mejora es muy pequeña comparado con el tiempo extra de ejecución que requiere. Por ejemplo, la configuración $k = 784$ arroja una tasa de aciertos de 82.03\%, pero requiere el 1960\% del tiempo de ejecución que $k = 40$ (784 vs. 40 productos internos, respectivamente.)
 
 La principal ventaja de este método es su facilidad de implementación. Si disponemos previamente de las aproximaciones de los autovectores de la matriz de covarianza y las transformadas características medias de cada dígito, podemos identificar un dígito manuscrito cualquiera computando $k$ productos internos y 10 normas euclídeas. Sin embargo, la tasa de aciertos que arroja este método es muy pequeña para la mayoría de las aplicaciones: una tasa del 80\% identifica incorrectamente 1 de cada 5 dígitos.
 
