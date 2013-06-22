@@ -122,62 +122,107 @@ OCR, dígitos manuscritos, reconocimiento, SVD, algoritmo QR.
 
 \section{Introducción Teórica}
 
-\subsection{Conceptos}
+Definimos a continuación un conjunto de conceptos utilizados a lo largo de este trabajo.
 
-\subsubsection{Media}
-La media ($\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$) es un promedio estándard comunmente relacionado con la distribución probabilística Normal. El promedio es la esperanza de esta distribución.
 
-En nuestro caso se utilizará la media de las columnas de la matriz que utilizaremos para el método OCR.
+\subsection{Matriz de covarianza}
 
-\subsubsection{Varianza}
-La varianza es una medida de dispersión definida como la esperanza del cuadrado de la desviación de dicha variable respecto a su media.
+Sea $\{x_1, \ldots x_n\}$ un conjunto de variables aleatorias, y sean $\sigma_{x_i, x_j}$ sus respectivas covarianzas (con $1 \leq i, j \leq n$). 
 
-En nuestro caso, debido a que utilizaremos una matríz para el método de OCR, el cálculo de la varianza será: $\sigma x_i = \frac{1}{n-1} \sum_{j=1}^{n} (x_i^{(j)} - \bar{x}_i)^2$.
+Definimos la matriz de covarianza de $\{x_1, \ldots x_n\}$ de la siguiente manera:
 
-\subsubsection{Matriz de covarianza}
-La covarianza es un valor que indica el grado de variación conjunta de dos variables aleatorias, su ecuación es la siguiente:
+$$
+  \begin{pmatrix}
+    \sigma x_1,x_1 & \sigma x_1,x_2 & \cdots & \sigma x_1,x_n \\
+    \sigma x_2,x_1 & \sigma x_2,x_2 & \cdots & \sigma x_2,x_n \\
+    \vdots  & \vdots  & \ddots & \vdots  \\
+    \sigma x_n,x_1 & \sigma x_n,x_2 & \cdots & \sigma x_n,x_n \\
+  \end{pmatrix}
+$$
 
- $\sigma x_k,x_j = \frac{1}{n-1} \sum{i=1}^{n} (x_k^{(i)} - \bar{x}_k)(x_j^{(i)} - \bar{x}_j) = \frac{1}{n-1}(x_k - \bar{x}_k)^{t}(x_j - \bar{x}_j)$
 
-Dadas las imágenes utilizadas para el caso en formas de fila en la matriz (la llamaremos matriz A), la matriz de covarianza se construye de la siguiente forma:
+\subsection{Transformación característica}
 
-$Mx = \frac{1}{n-1} X^{t}X = 
- \begin{pmatrix}
-  \sigma x_1,x_1 & \sigma x_1,x_2 & \cdots & \sigma x_1,x_n \\
-  \sigma x_2,x_1 & \sigma x_2,x_2 & \cdots & \sigma x_2,x_n \\
-  \vdots  & \vdots  & \ddots & \vdots  \\
-  \sigma x_n,x_1 & \sigma x_n,x_2 & \cdots & \sigma x_n,x_n \\
- \end{pmatrix}
-$
-\\
-Siendo la matriz $X = 
- \begin{pmatrix}
-  a_{1,1} - \bar{a_1} & a_{1,2} - \bar{a_2} & \cdots & a_{1,m} - \bar{a_m} \\
-  a_{2,1} - \bar{a_1} & a_{2,2} - \bar{a_2} & \cdots & a_{2,m} - \bar{a_m} \\
-  \vdots  & \vdots  & \ddots & \vdots  \\
-  a_{n,1} - \bar{a_1} & a_{n,2} - \bar{a_2} & \cdots & a_{n,m} - \bar{a_m} \\
- \end{pmatrix}
-$
+Para $i = 1,\ldots, n$, sea $x_i \in \real^{m}$ la $i$-\'esima imagen de nuestra base de datos almacenada por filas en un vector, y sea $\mu = (x_1 + \ldots + x_n)/n$ el promedio de las im\'agenes. Definimos $X\in\real^{n\times m}$ como la matriz que contiene en la $i$-\'esima fila al vector $(x_i - \mu)^{t}/\sqrt{n-1}$, y
 
-Se utiliza la matríz de covarianza para poder realizar luego una reducción de la redundancia en la información (reduciendo la covarianza) obteniendo los datos impresindibles y necesarios para la aplicación del método elegido de OCR.
+$$X=U \Sigma V^t$$
 
-La matriz de covarianza cuenta con la propiedad de ser simétrica, dado que $X^{t}X = (X^{t}X)^{t} = (X^{t}X^{t^{t}}) = X^{t}X$ permitiendo la utilización de métodos como QR para conseguir sus autovectores y autovalores.
+a su descomposici\'on en valores singulares, con $U\in\real^{n\times n}$ y $V\in\real^{m\times m}$ matrices ortogonales, y $\Sigma\in\real^{n\times m}$ la matriz diagonal conteniendo en la posici\'on $(i,i)$ al $i$-\'esimo valor singular $\sigma_i$.
+Siendo $v_i$ la columna $i$ de $V$, definimos para $i = 1,\ldots,n$ la \textsl{transformaci\'on caracter\'istica} del d\'igito $x_{i}$ como el vector $\mathbf{tc}(x_i) = (v_1^t\, x_i, v_2^t\, x_i,\ldots,v_k^t\, x_i) \in\real^k$, donde $k \in\{1,\ldots,m\}$ es un par\'ametro de la implementaci\'on.
 
-\subsubsection{Diagonalización de la matriz}
-\textbf{Teorema:}
-Si $\mathnormal{B} \in \mathbb{R}^{nxn}$ es simétrica, entonces existe una base ortonormal de autovectores ${v_1,..,v_n}$ asociados a autovalores $\lambda_1 .. \lambda_n$.
 
-Como la matriz de covarianzas es simétrica, según el teorema, esta tiene una base ortonormal de autovectores por lo que es diagonalizable y es posible expresarse de la forma $Mx = VDV^{t} = U \Sigma V^{t}$ (descomposición SVD de la matriz).
+\subsection{Algoritmo QR}
 
-\subsubsection{Método de diagonalización QR}
-Utilizando la propiedad de que las matrices simétricas son diagonalizables, se construye el siguiente algoritmo utilizando algún método de factorización QR.
+Describimos a continuación el algoritmo empleado en este trabajo para aproximar los autovectores necesarios para computar la transformación característica.
 
 \begin{algorithmic}
-  \WHILE{Cota elegida}
-    \STATE FactorizaciónQR($A_k$) $\rightarrow Q_k R_k$
-    \STATE $A_{k+1} \leftarrow R_k Q_k$
+  \STATE Input($A$)
+  \STATE $A_1$ $\leftarrow$ $A$
+  \WHILE{\textbf{not} CondiciónDeParada()}
+    \STATE $Q_k$, $R_k$ $\leftarrow$ FactorizaciónQR($A_k$)
+    \STATE $A_{k+1} \leftarrow R_k \times Q_k$
   \ENDWHILE
+  \STATE Output($A_{k+1}$, $Q_k$)
 \end{algorithmic}
+
+
+
+% \subsection{Conceptos}
+
+% \subsubsection{Media}
+% La media ($\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$) es un promedio estándard comunmente relacionado con la distribución probabilística Normal. El promedio es la esperanza de esta distribución.
+
+% En nuestro caso se utilizará la media de las columnas de la matriz que utilizaremos para el método OCR.
+
+% \subsubsection{Varianza}
+% La varianza es una medida de dispersión definida como la esperanza del cuadrado de la desviación de dicha variable respecto a su media.
+
+% En nuestro caso, debido a que utilizaremos una matríz para el método de OCR, el cálculo de la varianza será: $\sigma x_i = \frac{1}{n-1} \sum_{j=1}^{n} (x_i^{(j)} - \bar{x}_i)^2$.
+
+% \subsubsection{Matriz de covarianza}
+% La covarianza es un valor que indica el grado de variación conjunta de dos variables aleatorias, su ecuación es la siguiente:
+
+%  $\sigma x_k,x_j = \frac{1}{n-1} \sum{i=1}^{n} (x_k^{(i)} - \bar{x}_k)(x_j^{(i)} - \bar{x}_j) = \frac{1}{n-1}(x_k - \bar{x}_k)^{t}(x_j - \bar{x}_j)$
+
+% Dadas las imágenes utilizadas para el caso en formas de fila en la matriz (la llamaremos matriz A), la matriz de covarianza se construye de la siguiente forma:
+
+% $Mx = \frac{1}{n-1} X^{t}X = 
+%  \begin{pmatrix}
+%   \sigma x_1,x_1 & \sigma x_1,x_2 & \cdots & \sigma x_1,x_n \\
+%   \sigma x_2,x_1 & \sigma x_2,x_2 & \cdots & \sigma x_2,x_n \\
+%   \vdots  & \vdots  & \ddots & \vdots  \\
+%   \sigma x_n,x_1 & \sigma x_n,x_2 & \cdots & \sigma x_n,x_n \\
+%  \end{pmatrix}
+% $
+% \\
+% Siendo la matriz $X = 
+%  \begin{pmatrix}
+%   a_{1,1} - \bar{a_1} & a_{1,2} - \bar{a_2} & \cdots & a_{1,m} - \bar{a_m} \\
+%   a_{2,1} - \bar{a_1} & a_{2,2} - \bar{a_2} & \cdots & a_{2,m} - \bar{a_m} \\
+%   \vdots  & \vdots  & \ddots & \vdots  \\
+%   a_{n,1} - \bar{a_1} & a_{n,2} - \bar{a_2} & \cdots & a_{n,m} - \bar{a_m} \\
+%  \end{pmatrix}
+% $
+
+% Se utiliza la matríz de covarianza para poder realizar luego una reducción de la redundancia en la información (reduciendo la covarianza) obteniendo los datos impresindibles y necesarios para la aplicación del método elegido de OCR.
+
+% La matriz de covarianza cuenta con la propiedad de ser simétrica, dado que $X^{t}X = (X^{t}X)^{t} = (X^{t}X^{t^{t}}) = X^{t}X$ permitiendo la utilización de métodos como QR para conseguir sus autovectores y autovalores.
+
+% \subsubsection{Diagonalización de la matriz}
+% \textbf{Teorema:}
+% Si $\mathnormal{B} \in \mathbb{R}^{nxn}$ es simétrica, entonces existe una base ortonormal de autovectores ${v_1,..,v_n}$ asociados a autovalores $\lambda_1 .. \lambda_n$.
+
+% Como la matriz de covarianzas es simétrica, según el teorema, esta tiene una base ortonormal de autovectores por lo que es diagonalizable y es posible expresarse de la forma $Mx = VDV^{t} = U \Sigma V^{t}$ (descomposición SVD de la matriz).
+
+% \subsubsection{Método de diagonalización QR}
+% Utilizando la propiedad de que las matrices simétricas son diagonalizables, se construye el siguiente algoritmo utilizando algún método de factorización QR.
+
+% \begin{algorithmic}
+%   \WHILE{Cota elegida}
+%     \STATE FactorizaciónQR($A_k$) $\rightarrow Q_k R_k$
+%     \STATE $A_{k+1} \leftarrow R_k Q_k$
+%   \ENDWHILE
+% \end{algorithmic}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -328,21 +373,24 @@ Recomendamos el uso de este método para aplicaciones de baja prioridad y en don
 \section{Apéndice B: Código Fuente}
 
 
-% \subsection{Metodos.cpp}
+\subsection{ecuaciones.cpp}
 
-% \verbatimtabinput{../Metodos.cpp}
+\verbatimtabinput{../ecuaciones.cpp}
 
-% \subsection{Ecuaciones.cpp}
 
-% \verbatimtabinput{../Ecuaciones.cpp}
+\subsection{Matriz.h}
 
-% \subsection{Matriz.h}
+\verbatimtabinput{../Matriz.h}
 
-% \verbatimtabinput{../Matriz.h}
 
-% \subsection{Matriz.cpp}
+\subsection{Matriz.cpp}
 
-% \verbatimtabinput{../Matriz.cpp}
+\verbatimtabinput{../Matriz.cpp}
+
+
+\subsection{misc.cpp}
+
+\verbatimtabinput{../misc.cpp}
 
 
 \end{document}
