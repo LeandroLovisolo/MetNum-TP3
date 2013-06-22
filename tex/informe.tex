@@ -166,65 +166,6 @@ Describimos a continuación el algoritmo empleado en este trabajo para aproximar
 \end{algorithmic}
 
 
-
-% \subsection{Conceptos}
-
-% \subsubsection{Media}
-% La media ($\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i$) es un promedio estándard comunmente relacionado con la distribución probabilística Normal. El promedio es la esperanza de esta distribución.
-
-% En nuestro caso se utilizará la media de las columnas de la matriz que utilizaremos para el método OCR.
-
-% \subsubsection{Varianza}
-% La varianza es una medida de dispersión definida como la esperanza del cuadrado de la desviación de dicha variable respecto a su media.
-
-% En nuestro caso, debido a que utilizaremos una matríz para el método de OCR, el cálculo de la varianza será: $\sigma x_i = \frac{1}{n-1} \sum_{j=1}^{n} (x_i^{(j)} - \bar{x}_i)^2$.
-
-% \subsubsection{Matriz de covarianza}
-% La covarianza es un valor que indica el grado de variación conjunta de dos variables aleatorias, su ecuación es la siguiente:
-
-%  $\sigma x_k,x_j = \frac{1}{n-1} \sum{i=1}^{n} (x_k^{(i)} - \bar{x}_k)(x_j^{(i)} - \bar{x}_j) = \frac{1}{n-1}(x_k - \bar{x}_k)^{t}(x_j - \bar{x}_j)$
-
-% Dadas las imágenes utilizadas para el caso en formas de fila en la matriz (la llamaremos matriz A), la matriz de covarianza se construye de la siguiente forma:
-
-% $Mx = \frac{1}{n-1} X^{t}X = 
-%  \begin{pmatrix}
-%   \sigma x_1,x_1 & \sigma x_1,x_2 & \cdots & \sigma x_1,x_n \\
-%   \sigma x_2,x_1 & \sigma x_2,x_2 & \cdots & \sigma x_2,x_n \\
-%   \vdots  & \vdots  & \ddots & \vdots  \\
-%   \sigma x_n,x_1 & \sigma x_n,x_2 & \cdots & \sigma x_n,x_n \\
-%  \end{pmatrix}
-% $
-% \\
-% Siendo la matriz $X = 
-%  \begin{pmatrix}
-%   a_{1,1} - \bar{a_1} & a_{1,2} - \bar{a_2} & \cdots & a_{1,m} - \bar{a_m} \\
-%   a_{2,1} - \bar{a_1} & a_{2,2} - \bar{a_2} & \cdots & a_{2,m} - \bar{a_m} \\
-%   \vdots  & \vdots  & \ddots & \vdots  \\
-%   a_{n,1} - \bar{a_1} & a_{n,2} - \bar{a_2} & \cdots & a_{n,m} - \bar{a_m} \\
-%  \end{pmatrix}
-% $
-
-% Se utiliza la matríz de covarianza para poder realizar luego una reducción de la redundancia en la información (reduciendo la covarianza) obteniendo los datos impresindibles y necesarios para la aplicación del método elegido de OCR.
-
-% La matriz de covarianza cuenta con la propiedad de ser simétrica, dado que $X^{t}X = (X^{t}X)^{t} = (X^{t}X^{t^{t}}) = X^{t}X$ permitiendo la utilización de métodos como QR para conseguir sus autovectores y autovalores.
-
-% \subsubsection{Diagonalización de la matriz}
-% \textbf{Teorema:}
-% Si $\mathnormal{B} \in \mathbb{R}^{nxn}$ es simétrica, entonces existe una base ortonormal de autovectores ${v_1,..,v_n}$ asociados a autovalores $\lambda_1 .. \lambda_n$.
-
-% Como la matriz de covarianzas es simétrica, según el teorema, esta tiene una base ortonormal de autovectores por lo que es diagonalizable y es posible expresarse de la forma $Mx = VDV^{t} = U \Sigma V^{t}$ (descomposición SVD de la matriz).
-
-% \subsubsection{Método de diagonalización QR}
-% Utilizando la propiedad de que las matrices simétricas son diagonalizables, se construye el siguiente algoritmo utilizando algún método de factorización QR.
-
-% \begin{algorithmic}
-%   \WHILE{Cota elegida}
-%     \STATE FactorizaciónQR($A_k$) $\rightarrow Q_k R_k$
-%     \STATE $A_{k+1} \leftarrow R_k Q_k$
-%   \ENDWHILE
-% \end{algorithmic}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Desarrollo                                                                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
