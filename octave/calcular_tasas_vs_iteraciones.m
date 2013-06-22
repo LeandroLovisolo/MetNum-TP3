@@ -1,4 +1,4 @@
-function calcular_tasas_vs_cotas()
+function calcular_tasas_vs_iteraciones()
     msg('Cargando imágenes de entrenamiento...\n');
     trainImages = leerMNISTimageRows('../train-images-idx3-ubyte');
     trainLabels = leerMNISTlabel('../train-labels-idx1-ubyte');
@@ -85,9 +85,9 @@ function calcular_tasas_vs_cotas()
         aciertosPorIteracion(1, end + 1) = aciertos * 100 / 10000;
    endfor
 
-   tasas_vs_cotas = aciertosPorIteracion;
+   tasas_vs_iteraciones = aciertosPorIteracion;
 
-   save('tasas_vs_cotas.mat', 'tasas_vs_cotas');
+   save('tasas_vs_iteraciones.mat', 'tasas_vs_iteraciones');
 
 
 function V = autovectores(X)
