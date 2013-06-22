@@ -85,7 +85,7 @@ function test_diff()
         aciertosPorIteracion(1, end + 1) = aciertos * 100 / 10000;
    endfor
 
-   save('aciertos_diferentes_cotas.mat', aciertosPorIteracion);
+   save('aciertos_diferentes_cotas.mat', 'aciertosPorIteracion');
 
 
 function V = autovectores(X)
