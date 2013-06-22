@@ -1,4 +1,4 @@
-.PHONY: all clean graficos tasas-vs-k tasas-vs-iteraciones
+.PHONY: all clean graficos tasas-vs-imagenes tasas-vs-k tasas-vs-iteraciones
 
 all: informe.pdf
 
@@ -6,7 +6,12 @@ informe.pdf:
 	pdflatex -interactive=nonstopmode -halt-on-error informe.tex
 	pdflatex -interactive=nonstopmode -halt-on-error informe.tex
 
-graficos: tasas-vs-k tasas-vs-iteraciones
+graficos: tasas-vs-imagenes tasas-vs-k tasas-vs-iteraciones
+
+tasas-vs-imagenes:
+	cd ../octave; \
+	octave --eval graficar_tasas_vs_imagenes; \
+	mv tasas-vs-imagenes.tex tasas-vs-imagenes.eps ../tex	
 
 tasas-vs-k:
 	cd ../octave; \
