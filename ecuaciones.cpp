@@ -5,12 +5,11 @@
 #include <cmath>
 using namespace std;
 
-Matriz* matrizDeCovarianza(Matriz& A) {
+Matriz* matrizX(Matriz& A) {
 	Matriz *X = A.transformarAMediaCero();
 	Matriz *Xret = (*X)*(1/sqrt(X->filas()-1));
 	delete X;
 	return Xret;
-	return 0;
 }
 
 Matriz* TC(Matriz& x, Matriz&Vt) {
@@ -25,14 +24,12 @@ Matriz* generarVt(Matriz& A) {
 	if(!fileExists((char*)"XtX.mat")) {
 		Matriz* imagenes = leerMNISTimages((char*) "train-images.idx3-ubyte");
 		cout << "Leyo las imagenes" << endl;
-		Matriz* X = matrizDeCovarianza(*imagenes);
+		Matriz* X = matrizX(*imagenes);
 		cout << "Matriz X" << endl;
 		Matriz* Xt = new Matriz(*X);
 		Xt->transponer();
-		cout << "Matrix Xt" << endl;
+		cout << "Matrix XtX" << endl;
 		XtX = (*Xt)*(*X);
-		cout << "Matriz XtX columnas = " << XtX->columnas() << endl;
-		cout << "Matriz XtX filas = " << XtX->filas() << endl;
 		XtX->save((char*)"XtX.mat");
 		delete imagenes;
 		delete X;
@@ -46,16 +43,16 @@ Matriz* generarVt(Matriz& A) {
 	}
 
 	if(!fileExists((char*)"Vt.mat")) {
-		cout << "Generando matriz Vt" << endl;
+		cout << "Cargando matriz Vt" << endl;
 		tuple <Matriz*, Matriz*> res = XtX->diagonalizacionQR(0.1);
+		cout << "Ordenando autovectores" << endl;
+		ordenarAuAv(*get<0>(res), *get<1>(res));
 		get<0>(res)->transponer();
 		get<0>(res)->save((char*)"Vt.mat");
 		get<1>(res)->save((char*)"Avalores.mat");
-		cout << "Ordenando autovectores" << endl;
-		ordenarAuAv(*get<0>(res), *get<1>(res));
-		return get<0>(res);
 		delete get<1>(res);
 		delete XtX;
+		return get<0>(res);
 	}
 	else {
 		cout << "Cargada matriz Vt" << endl;

@@ -115,12 +115,6 @@ void Matriz::transponer(){
 	int temp = _filas;
 	_filas = _columnas;
 	_columnas = temp;
-/*
-	_transpuesta = true;
-	int temp = _filas;
-	_filas = _columnas;
-	_columnas = temp;
-*/
 }
 
 double &Matriz::elem(const int fila, const int columna) {
@@ -212,13 +206,6 @@ Matriz* Matriz::operator*(double k) {
 	for(int i = 0; i < _filas*_columnas; i++) {
 		producto->vectorMatriz[i] *= k;
 	}
-	/*
-	for(int i = 0; i < _filas; i++) {
-		for(int j = 0; j < _columnas; j++) {
-			producto->elem(i, j) = producto->elem(i, j) * k;
-		}
-	}
-	*/
 	return producto;
 }
 
@@ -268,20 +255,14 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionGivens() {
 	double x1,x2,norm;
 	for(int j=0; j<_columnas-1; j++) {
 		for(int i = j+1; i<_filas; i++) {
-			//cout << "Iteracion (i,j)=("<<i<<","<<j<<") = " << r->elem(i,j) << endl;
 			if(r->elem(i,j) != 0) {
 				x1 = r->elem(j,j);
 				x2 = r->elem(i,j); //elemento a poner en 0
-				//cout << "x1 = " << x1 << endl;
-				//cout << "x2 = " << x2 << endl;
 				norm = sqrt(abs(x1)*abs(x1)+abs(x2)*abs(x2));
-				//cout << "Norm " << norm << endl;
 				if(norm == 0) continue;
 				iteracion++;
-				cout << "Iteracion "<< iteracion << "(i,j)=("<<i<<","<<j<<") "<< endl;
 				//Cambio los elementos anteriores
 				if(lastI != -1) {
-					//cout << "Entro para poner bien los ultimos numeros" << endl;
 					I->elem(lastI,lastI) = 1;
 					I->elem(lastI,lastJ) = 0;
 					I->elem(lastJ,lastJ) = 1;
@@ -294,19 +275,14 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionGivens() {
 				I->elem(i,j) = -x2/norm;
 				I->elem(j,j) = x1/norm;
 				I->elem(j,i) = x2/norm;
-				//cout << "Matriz I" << endl;
-				//I->print();
 
 				Matriz* newR = (*I)*(*r);
-				//cout << "Matriz R" << endl;
-				//newR->print();
 				delete r;
 				r = newR;
 				Matriz* newQ = (*I)*(*q);
 				delete q;
 				q = newQ;
 			}
-			//cout << "-------------------------------" << endl;
 		}
 	}
 	delete I;
@@ -314,7 +290,7 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionGivens() {
 	return make_tuple(q,r);
 }
 
-tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolderDos() {
+tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolder() {
 	Matriz *r = new Matriz(*this);
 	Matriz *q = identidad(_filas);
 	for(int i=0; i<_columnas-1; i++) {
@@ -326,51 +302,16 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolderDos() {
 		}
 		uRes->elem(i,0) -= uRes->normaCuadradoVectorial();
 		double cte = 2 / pow(uRes->normaCuadradoVectorial(),2);
-		//cout << "Cte problemática " << cte << endl;
-		//cout << "Norma cuadrado vectorial al cuadrado: " <<  pow(uRes->normaCuadradoVectorial(),2) << endl;
 		if(pow(uRes->normaCuadradoVectorial(),2) == 0) {
 			delete uRes;
 			continue;
 		}
-		// cout << "--------------------------" << endl;
-		// cout << "Matriz uRes" << endl;
-		// uRes->print();
-		// cout << "--------------------------" << endl;
 		Matriz* uTRes = new Matriz(*uRes);
 		uTRes->transponer();
 		Matriz* uTResAk = (*uTRes)*(*r);
-		// cout << "--------------------------" << endl;
-		// cout << "Matriz uTResAk" << endl;
-		// uTResAk->print();
-		// cout << "--------------------------" << endl;
 		Matriz* uResuTResAk = (*uRes)*(*uTResAk);
-		// cout << "--------------------------" << endl;
-		// cout << "Matriz uResuTResAk" << endl;
-		// uResuTResAk->print();
-		// cout << "--------------------------" << endl;
 		Matriz* cteuResuTResAk = (*uResuTResAk)*cte;
-		// cout << "--------------------------" << endl;
-		// cout << "Matriz cteuResuTResAk" << endl;
-		// cteuResuTResAk->print();
-		// cout << "--------------------------" << endl;
-		/*
-		Por si hay errores de precisión (forma super correcta de hacerlo)
-		Matriz* subMcteAkuUt = cteuResuTResAk->submatriz(i,_filas-1, i, _columnas-1);
-		Matriz* cerosSub = ceros(_filas, _columnas);
-		cerosSub->cambiarSubmatriz(*subMcteAkuUt, i,_filas-1, i, _columnas-1);
-		*/
 		Matriz* newR = (*r)-(*cteuResuTResAk);
-		// cout << "-------------------------" << endl;
-		// cout << "Ceros Sub" << endl;
-		// cerosSub->print();
-		// cout << "-------------------------" << endl;
-		//Matriz* newR = (*r)-(*cerosSub);
-		// cout << "--------------------------" << endl;
-		// cout << "Matriz newR" << endl;
-		// newR->print();
-		// cout << "--------------------------" << endl;
-		//delete cerosSub;
-		//delete subMcteAkuUt;
 		delete cteuResuTResAk;
 		delete uResuTResAk;
 		delete uTResAk;
@@ -399,68 +340,6 @@ tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolderDos() {
 		delete r;
 		r = newR;
 		delete q;
-		q = newQ;
-	}
-	q->transponer();
-	return make_tuple(q, r);
-}
-
-tuple <Matriz*, Matriz*> Matriz::factorizacionHouseHolder() {
-	Matriz *r = new Matriz(*this);
-	Matriz *q = identidad(_filas);
-	for(int i=0; i<_columnas-1; i++) {
-		cout << "Columna " << i << endl;
-		//Vector x
-		//cout << "Matriz R" << i << endl;
-		//r->print();
-		Matriz *x = r->submatriz(i,_filas-1, i, i);
-		cout << "Submatriz desde fila " << i << " -> " << _filas-1 << " columnas " << i << " -> " << i << endl;
- 		//cout << "Vector X" << endl;
-		//x->print();
-		//Vector x-y = u
-		x->elem(0,0) -= x->normaCuadradoVectorial();
-		//cout << "Vector U" << endl;
-		//x->print();
-		// 2/ (||u||_2)^2
-		double cte = 2 / pow(x->normaCuadradoVectorial(),2);
-		cout << "Cte problemática " << cte << endl;
-		cout << "Norma cuadrado vectorial al cuadrado: " <<  pow(x->normaCuadradoVectorial(),2) << endl;
-		if(pow(x->normaCuadradoVectorial(),2) == 0) {
-			delete x;
-			continue;
-		}
-		Matriz *uT = new Matriz(*x);
-		uT->transponer();
-		//cout << "Vector Ut" << endl;
-		//uT->print();
-		Matriz *uxuT = (*x)*(*uT);
-		//cout << "Matriz uxuT" << endl;
-		//uxuT->print();
-		Matriz *cteuxuT = (*uxuT)*cte;
-		delete uxuT;
-		delete uT;
-		delete x;
-		//Hago I - 2*u*uT/(||u||_2)^2
-		Matriz *I = identidad(cteuxuT->_filas);
-		Matriz *Hk = (*I)-(*cteuxuT);
-		//cout << "Matriz Hk " << endl;
-		//Hk->print();
-		delete I;
-		delete cteuxuT;
-		//Para hacer la multiplicación entre Q y R relleno una identidad
-		Matriz *QTk = identidad(q->_filas);
-		//cout << "Cómo es QTk " << endl;
-		// QTk->print();
-		QTk->cambiarSubmatriz(*Hk, i, _filas-1, i, _columnas -1);
-		// cout << "Cómo es QTk despues de cambiar sumatriz" << endl;
-		// QTk->print();
-		delete Hk;
-		Matriz *newR = (*QTk)*(*r);
-		delete r;
-		r = newR;
-		Matriz *newQ = (*QTk)*(*q);
-		delete q;
-		delete QTk;
 		q = newQ;
 	}
 	q->transponer();
@@ -514,34 +393,24 @@ Matriz* Matriz::transformarAMediaCero() {
 
 tuple <Matriz*, Matriz*> Matriz::diagonalizacionQR(double cota) {
 	Matriz *Q = identidad(_filas);
-	cout << "Checkpoint 1" << endl;
 	Matriz *Ak = new Matriz(*this);
 	int i = 0;
 	while(Ak->sumBajoDiagonal() > cota/*i != 5*/) {
 		cout << "Suma bajo la diagonal " << Ak->sumBajoDiagonal() << endl;
-		tuple <Matriz*, Matriz*> res = Ak->factorizacionHouseHolderDos();//Ak->factorizacionHouseHolder();
-		//cout << "Matriz Q" << i << endl;
-		//get<0>(res)->print();
-		//cout << "Matriz R" << i << endl;
-		//get<1>(res)->print();
+		tuple <Matriz*, Matriz*> res = Ak->factorizacionHouseHolder();//Ak->factorizacionHouseHolder();
 		delete Ak;
 		//Qk = Q(k-2) * Q(k-1)
 		Matriz *newQ = (*Q)*(*get<0>(res));
-		//cout << "New Q" << i+1 << endl;
-		//newQ->print();
 		delete Q;
 		Q = newQ;
 		//Ak = Rk*Qk
 		Ak = (*get<1>(res))*(*get<0>(res));
-		//cout << "Nuevo A" << i+1 << endl;
-		//Ak->print();
 		delete get<0>(res);
 		delete get<1>(res);
 		i++;
 	}
 	cout << "Suma bajo la diagonal final" << Ak->sumBajoDiagonal() << endl;
 	cout << "Numero de iteraciones realizadas: " << i << endl;
-	//cout << "Iteraciones" << i << endl;
 	return make_tuple(Q, Ak);
 }
 
